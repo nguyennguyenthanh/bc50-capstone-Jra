@@ -9,14 +9,12 @@ const RegisterPage: React.FC = () => {
   const dispatch: any = useDispatch();
   const navigate: any = useNavigate();
   const error: any = useSelector((state: any) => state.registerReducer.error);
-  console.log("🚀 ~ file: index.tsx:12 ~ error:", error)
   const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
     dispatch(registerData(values, navigate));
   };
 
   const renderError = () => {
-    return (error && (<div className='alert alert-danger'>{error?.response.data.message}</div>));
+    return <div className='alert alert-danger'>{error?.response.data.message}</div>;
   }
 
   return (
@@ -77,7 +75,7 @@ const RegisterPage: React.FC = () => {
             />
           </Form.Item>
           <Fragment>
-            {renderError()}
+            {error && renderError()}
           </Fragment>
           <Form.Item className='text-center'>
             <Button type="primary" htmlType="submit" className="login-form-button w-full bg-blue-400 font-medium">

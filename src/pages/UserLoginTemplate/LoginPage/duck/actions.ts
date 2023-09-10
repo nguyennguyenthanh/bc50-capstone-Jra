@@ -36,3 +36,12 @@ const actLoginFail = (error: any): Action => ({
   payload: error
 })
 
+export const actLogout = (navigate: any) => {
+  if (localStorage.getItem('UserLogin')) {
+    localStorage.removeItem('UserLogin')
+    navigate('/', { replace: true })
+  }
+  return {
+    type: ActionTypes.AUTH_CLEAR
+  }
+}

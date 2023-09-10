@@ -29,6 +29,12 @@ const loginReducer = (state = loginState, action: Action) => {
       state.error = action.payload;
       return { ...state }
     }
+    case ActionTypes.AUTH_CLEAR: {
+      state.loading = false;
+      state.data = null;
+      state.error = null;
+      return { ...state }
+    }
     default:
       return { ...state }
   }

@@ -8,29 +8,14 @@ const routes = [
     nested: [
       {
         path: '',
-        element: lazy(() => import('./../pages/HomeTemplate/HomePage'))
+        element: lazy(() => import('../pages/HomeTemplate/ProjectPage'))
       },
-
-      // {
-      //   path: 'about',
-      //   element: lazy(() => import('./../pages/HomeTemplate/AboutPage'))
-      // },
-      // {
-      //   path: "detail/:id",
-      //   element: lazy(() => import("./../pages/HomeTemplate/DetailMoviePage")),
-      // },
-      // {
-      //   path: 'booking-ticket/:id',
-      //   element: lazy(() => import("./../pages/HomeTemplate/BookingTicketPage")),
-      // }
+      {
+        path: '/create-project',
+        element: lazy(() => import('../pages/HomeTemplate/CreateProjectPage'))
+      },
     ],
-
   },
-
-  // {
-  //   path: "personal-info",
-  //   element: lazy(() => import("./../pages/HomeTemplate/Personal")),
-  // },
   {
     path: "user-login",
     element: lazy(() => import("../pages/UserLoginTemplate")),
@@ -39,45 +24,13 @@ const routes = [
         path: "auth",
         element: lazy(() => import("../pages/UserLoginTemplate/LoginPage")),
       },
-      // {
-      //   path: "dashboard",
-      //   element: lazy(() => import("./../pages/AdminTemplate/Dashboard")),
-      // },
-      // {
-      //   path: "films",
-      //   element: lazy(() => import("../pages/AdminTemplate/Films")),
-      // },
-      // {
-      //   path: "films/addnew",
-      //   element: lazy(() => import("../pages/AdminTemplate/AddNew")),
-      // },
-      // {
-      //   path: "films/edit/:id",
-      //   element: lazy(() => import("../pages/AdminTemplate/EditFilms")),
-      // },
-      // {
-      //   path: "films/showtime/:id",
-      //   element: lazy(() => import("../pages/AdminTemplate/ShowTime")),
-      // },
-      // {
-      //   path: "add-user",
-      //   element: lazy(() => import("../pages/AdminTemplate/Dashboard/AddUser")),
-      // },
-      // {
-      //   path: "edit-user",
-      //   element: lazy(() => import("../pages/AdminTemplate/Dashboard/EditUser")),
-      // },
+
     ],
   },
   {
     path: "register",
     element: lazy(() => import("../pages/UserLoginTemplate/RegisterPage")),
   },
-
-  // {
-  //   path: "register",
-  //   element: lazy(() => import("../pages/AdminTemplate/RegisterPage")),
-  // }
 ]
 
 

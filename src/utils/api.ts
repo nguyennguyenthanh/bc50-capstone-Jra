@@ -4,7 +4,8 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config: any) => {
-    const accessToken = JSON.parse(localStorage.getItem('UserLogin') || '')?.accessToken;
+    const strResult: string | null = localStorage.getItem('UserLogin');
+    const accessToken = strResult ? JSON.parse(strResult)?.accessToken : null;
     config.headers = {
         ...config.headers,
         TokenCybersoft:
