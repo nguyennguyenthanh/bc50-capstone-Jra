@@ -3,6 +3,7 @@ module.exports = {
   content: [
     './src/pages/HomeTemplate/_components/Header/index.tsx',
     './src/pages/HomeTemplate/CreareProjectPage/index.tsx',
+    './src/pages/HomeTemplate/ProjectPage/index.tsx',
     './src/pages/UserLoginTemplate/LoginPage/index.tsx',
   ],
   presets: [],
