@@ -4,7 +4,7 @@ import type { ColumnsType, TableProps } from 'antd/es/table';
 import { AudioOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { DeleteProject, fetchAllProject } from './duck/actions';
+import { DeleteProject, actUpdateSelectProject, fetchAllProject } from './duck/actions';
 
 export default function ProjectPage() {
   const dispatch: any = useDispatch();
@@ -15,7 +15,10 @@ export default function ProjectPage() {
     dispatch(fetchAllProject());
   }, []);
 
-  const handleInfoEditUser = () => {
+  const handleInfoUpdateProject = (id: any) => {
+    const project = dataProject?.find((project: any) => project.id === id);
+    dispatch(actUpdateSelectProject(project));
+    navigate("/update-project", { replace: true });
   }
   //Table Antd
   const columns = [
@@ -80,12 +83,11 @@ export default function ProjectPage() {
         projectName: <a href='#'>{item.projectName}</a>,
         categoryName: item.categoryName,
         creator: item.creator.name,
-        members: item.members?.map((item: any, index: any) => <img key={index} src={item.avatar} alt={item.avatar} className='inline-block h-8 w-8 rounded-full ring-2 ring-white' />),
+        members: item.members?.map((item: any, index: number | string) => <img key={index} src={item.avatar} alt={item.avatar} className='inline-block h-8 w-8 rounded-full ring-2 ring-white' />),
         actions: <Fragment >
-          <Button key={1} style={{ paddingBottom: '40px' }} className='text-2xl border-none' onClick={() => handleInfoEditUser()}><EditOutlined style={{ color: 'blue' }} /></Button>
+          <Button key={1} style={{ paddingBottom: '40px' }} className='text-2xl border-none' onClick={() => handleInfoUpdateProject(item.id)}><EditOutlined style={{ color: 'blue' }} /></Button>
           <Button key={2} style={{ paddingBottom: '43px', paddingTop: '0px' }} className='ml-2 text-2xl border-none' onClick={async () => {
             if (window.confirm('Bạn có chắc muốn xóa dự án này ' + item.id)) {
-              //gọi action
               await dispatch(DeleteProject(item.id));
               await dispatch(fetchAllProject());
             }
@@ -103,6 +105,7 @@ export default function ProjectPage() {
   const { Search } = Input;
 
   const onSearch = (value: any) => {
+    dispatch(fetchAllProject(value))
   };
   return (
     <div className='mt-4 container'>

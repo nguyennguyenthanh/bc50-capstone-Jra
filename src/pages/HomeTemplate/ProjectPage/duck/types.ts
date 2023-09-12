@@ -2,8 +2,9 @@ export interface ProjectState<T> {
     loading: boolean;
     data: T[] | null | T;
     dataDelete: T[] | null | T;
-    dataEdit: T[] | null | T;
+    dataUpdate: T[] | null | T;
     error: any
+    infoProject: T[] | null | T | undefined;
 }
 
 export interface Action {

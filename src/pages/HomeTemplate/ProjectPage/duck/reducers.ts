@@ -7,8 +7,9 @@ const projectState: ProjectState<AllProjects> = {
   loading: false,
   data: null,
   dataDelete: null,
-  dataEdit: null,
+  dataUpdate: null,
   error: null,
+  infoProject: undefined,
 }
 
 const allProjectReducer = (state = projectState, action: Action) => {
@@ -30,6 +31,29 @@ const allProjectReducer = (state = projectState, action: Action) => {
       state.loading = false;
       state.data = null;
       state.error = action.payload;
+      return { ...state }
+    }
+    //edit pj
+    case ActionTypes.UPDATE_PROJECT_REQUEST: {
+      state.loading = true;
+      state.dataUpdate = null;
+      state.error = null;
+      return { ...state }
+    }
+    case ActionTypes.UPDATE_PROJECT_SUCCESS: {
+      state.loading = false;
+      state.dataUpdate = action.payload;
+      state.error = null;
+      return { ...state }
+    }
+    case ActionTypes.UPDATE_PROJECT_FAIL: {
+      state.loading = false;
+      state.dataUpdate = null;
+      state.error = action.payload;
+      return { ...state }
+    }
+    case ActionTypes.SELECT_PROJECT: {
+      state.infoProject = action.payload;
       return { ...state }
     }
     //delete pj
