@@ -16,7 +16,21 @@ export const fetchAllProject = () => {
   }
 }
 
+export const DeleteProject = (id: any) => {
+  return (dispatch: any) => {
+    dispatch(actDeleteProjectRequest());
+    api.delete(`Project/deleteProject?projectId=${id}`)
+      .then((result: Result<AllProjects>) => {
+        dispatch(actDeleteProjectSuccess(result.data.content));
+      })
+      .catch((error) => {
+        dispatch(actDeleteProjectFail(error));
+      })
+  }
+}
 
+
+//FETCH LIST PJ
 const actAllProjectRequest = (): Action => ({ type: ActionTypes.ALL_PROJECT_REQUEST });
 const actAllProjectSuccess = (data: AllProjects[]): Action => ({
   type: ActionTypes.ALL_PROJECT_SUCCESS,
@@ -24,5 +38,16 @@ const actAllProjectSuccess = (data: AllProjects[]): Action => ({
 });
 const actAllProjectFail = (error: any) => ({
   type: ActionTypes.ALL_PROJECT_FAIL,
+  payload: error
+});
+
+//DELETE PJ
+const actDeleteProjectRequest = (): Action => ({ type: ActionTypes.DELETE_PROJECT_REQUEST });
+const actDeleteProjectSuccess = (dataDelete: AllProjects[]): Action => ({
+  type: ActionTypes.DELETE_PROJECT_SUCCESS,
+  payload: dataDelete
+});
+const actDeleteProjectFail = (error: any) => ({
+  type: ActionTypes.DELETE_PROJECT_FAIL,
   payload: error
 });

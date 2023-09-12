@@ -1,21 +1,20 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect, Fragment, useState } from 'react';
 import { Button, Table, Input, Space } from 'antd';
 import type { ColumnsType, TableProps } from 'antd/es/table';
 import { AudioOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { fetchAllProject } from './duck/actions';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { DeleteProject, fetchAllProject } from './duck/actions';
 
 export default function ProjectPage() {
   const dispatch: any = useDispatch();
   const navigate: any = useNavigate();
   const dataProject: any = useSelector((state: any) => state.allProjectReducer.data);
-  console.log("🚀 ~ file: index.tsx:14 ~ ProjectPage ~ dataProject:", dataProject)
-
+  const [creator, setNameCreator] = useState([]);
   useEffect(() => {
     dispatch(fetchAllProject());
   }, []);
-  
+
   const handleInfoEditUser = () => {
   }
   //Table Antd
@@ -24,38 +23,25 @@ export default function ProjectPage() {
       title: 'Id',
       dataIndex: 'id',
       sorter: (a: any, b: any) => {
-        let taiKhoanA = a.taiKhoan.toLowerCase().trim();
-        let taiKhoanB = b.taiKhoan.toLowerCase().trim();
-        if (taiKhoanA > taiKhoanB) {
-          return 1;
-        }
-        return -1;
+        return a.id - b.id;
       },
       width: '15%',
     },
     {
       title: 'Project name',
       dataIndex: 'projectName',
-      sorter: (a: any, b: any) => {
-        let matKhauA = a.matKhau.toLowerCase().trim();
-        let matKhauB = b.matKhau.toLowerCase().trim();
-        if (matKhauA > matKhauB) {
-          return 1;
-        }
-        return -1;
-      },
       width: '15%',
     },
     {
       title: 'Category name',
       dataIndex: 'categoryName',
       sorter: (a: any, b: any) => {
-        let hoTenA = a.hoTen.toLowerCase().trim();
-        let hoTenB = b.hoTen.toLowerCase().trim();
-        if (hoTenA > hoTenB) {
-          return 1;
+        let categoryNameA = a.categoryName?.trim().toLowerCase();
+        let categoryNameB = b.categoryName?.trim().toLowerCase();
+        if (categoryNameA > categoryNameB) {
+          return -1;
         }
-        return -1;
+        return 1;
       },
       width: '20%',
     },
@@ -63,26 +49,19 @@ export default function ProjectPage() {
       title: 'Creator',
       dataIndex: 'creator',
       sorter: (a: any, b: any) => {
-        let emailA = a.email.toLowerCase().trim();
-        let emailB = b.email.toLowerCase().trim();
-        if (emailA > emailB) {
-          return 1;
+        let creatorA = a.creator?.name?.trim().toLowerCase();
+        let creatorB = b.creator?.name?.trim().toLowerCase();
+        if (creatorA > creatorB) {
+          return -1;
         }
-        return -1;
+        return 1;
       },
       width: '20%',
+
     },
     {
       title: 'Members',
       dataIndex: 'members',
-      sorter: (a: any, b: any) => {
-        let soDTA = a.soDT.toLowerCase().trim();
-        let soDTB = b.soDT.toLowerCase().trim();
-        if (soDTA > soDTB) {
-          return 1;
-        }
-        return -1;
-      },
       width: '15%',
     },
     {
@@ -98,14 +77,18 @@ export default function ProjectPage() {
       return {
         key: index,
         id: item.id,
-        projectName: item.projectName,
+        projectName: <a href='#'>{item.projectName}</a>,
         categoryName: item.categoryName,
-        creator: item.creator,
-        members: item.members,
+        creator: item.creator.name,
+        members: item.members?.map((item: any, index: any) => <img key={index} src={item.avatar} alt={item.avatar} className='inline-block h-8 w-8 rounded-full ring-2 ring-white' />),
         actions: <Fragment >
           <Button key={1} style={{ paddingBottom: '40px' }} className='text-2xl border-none' onClick={() => handleInfoEditUser()}><EditOutlined style={{ color: 'blue' }} /></Button>
-          <Button key={2} style={{ paddingBottom: '43px', paddingTop: '0px' }} className='ml-2 text-2xl border-none' onClick={() => {
-            
+          <Button key={2} style={{ paddingBottom: '43px', paddingTop: '0px' }} className='ml-2 text-2xl border-none' onClick={async () => {
+            if (window.confirm('Bạn có chắc muốn xóa dự án này ' + item.id)) {
+              //gọi action
+              await dispatch(DeleteProject(item.id));
+              await dispatch(fetchAllProject());
+            }
           }}><DeleteOutlined style={{ color: 'red' }} /></Button>
         </Fragment>
       }
@@ -115,7 +98,6 @@ export default function ProjectPage() {
   }
 
   const onChange = (pagination: any, filters: any, sorter: any, extra: any) => {
-    console.log('params', pagination, filters, sorter, extra);
   };
   //Search-Bar
   const { Search } = Input;

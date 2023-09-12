@@ -1,6 +1,8 @@
 export interface ProjectState<T> {
     loading: boolean;
     data: T[] | null | T;
+    dataDelete: T[] | null | T;
+    dataEdit: T[] | null | T;
     error: any
 }
 
@@ -9,7 +11,13 @@ export interface Action {
     payload?: any;
 }
 export interface AllProjects {
-    members: [];
+    members: [
+        {
+            userId: number,
+            name: string,
+            avatar: string
+        }
+    ];
     creator: {
         id: number,
         name: string,

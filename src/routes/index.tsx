@@ -14,6 +14,10 @@ const routes = [
         path: '/create-project',
         element: lazy(() => import('../pages/HomeTemplate/CreateProjectPage'))
       },
+      {
+        path: '/update-project',
+        element: lazy(() => import('../pages/HomeTemplate/UpdateProjectPage'))
+      },
     ],
   },
   {
