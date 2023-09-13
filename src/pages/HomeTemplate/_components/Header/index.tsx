@@ -1,10 +1,11 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import { DownOutlined, UserOutlined, LogoutOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Dropdown, Space, Button, Col, DatePicker, Drawer, Form, Input, Row, Select } from 'antd';
 import { NavLink, Navigate, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { actLogout } from '../../../UserLoginTemplate/LoginPage/duck/actions';
+import { actProfileUser, fetchProfileUser } from '../../Profile/duck/actions';
 
 
 const { Option } = Select;
@@ -42,11 +43,11 @@ export default function Navbar() {
   ];
   const items3: MenuProps['items'] = [
     {
-      label: <button ><UserOutlined className='mr-1' />Thông tin cá nhân</button>,
+      label: <NavLink to={'/profiles'} style={{ textDecoration: 'none' }}><UserOutlined className='mr-1' />Profiles</NavLink>,
       key: '0',
     },
     {
-      label: <button onClick={handleLogout}><LogoutOutlined className='mr-1' />Đăng xuất</button>,
+      label: <button onClick={handleLogout}><LogoutOutlined className='mr-1' />Log out</button>,
       key: '1',
     },
   ];
@@ -59,11 +60,11 @@ export default function Navbar() {
       children: [
         {
           key: '0-1',
-          label: <NavLink to={'/'} className='hover:font-medium transition-all delay-500' style={{textDecoration:'none'}}>View all projects</NavLink>,
+          label: <NavLink to={'/'} className='hover:font-medium transition-all delay-500' style={{ textDecoration: 'none' }}>View all projects</NavLink>,
         },
         {
           key: '0-2',
-          label: <NavLink to={'/create-project'} className='hover:font-medium transition-all delay-500' style={{textDecoration:'none'}}>Create projects</NavLink>,
+          label: <NavLink to={'/create-project'} className='hover:font-medium transition-all delay-500' style={{ textDecoration: 'none' }}>Create projects</NavLink>,
         },
       ],
     },
@@ -90,6 +91,18 @@ export default function Navbar() {
     setOpen(false);
   };
 
+  const resultProfile: string | null = localStorage.getItem('UserLogin');
+  const dataProfileUser = {
+    id: resultProfile ? JSON.parse(resultProfile)?.id : null,
+    email: resultProfile ? JSON.parse(resultProfile)?.email : null,
+    name: resultProfile ? JSON.parse(resultProfile)?.name : null,
+    phoneNumber: resultProfile ? JSON.parse(resultProfile)?.phoneNumber : null,
+    passWord: "",
+  }
+
+  const handleProfileUser = () => {
+    dispatch(actProfileUser(dataProfileUser));
+  }
   return (
     <header className="p-2 dark:bg-gray-800 dark:text-gray-100 border-b-2 ">
       <div className="container flex justify-between h-16 mx-auto">
@@ -239,9 +252,9 @@ export default function Navbar() {
           {isValid && (<NavLink to={'/register'} className="self-center px-3 py-2 ml-3 rounded-lg border-b-2 dark:border-transparent dark:text-violet-400 dark:border-violet-400 text-blue-600 hover:bg-blue-400 hover:text-blue-800 hover:rounded-lg transition-all delay-150 font-medium" style={{ textDecoration: 'none' }}>Sign up</NavLink>)}
           {!isValid && (<Dropdown menu={{ items: items3 }} trigger={['click']} className='font-medium text-lg mb-2'>
             <Space>
-              <NavLink to={'/'} style={{ textDecoration: "none" }} className={'text-blue-600 hover:text-blue-800'}>
+              <a href='#' onClick={() => handleProfileUser()} style={{ textDecoration: "none" }} className='text-blue-600 hover:text-blue-800'>
                 <UserOutlined className='mr-1' />{'Hello ' + name}
-              </NavLink>
+              </a>
             </Space>
           </Dropdown>)}
         </div>

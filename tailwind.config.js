@@ -4,6 +4,8 @@ module.exports = {
     './src/pages/HomeTemplate/_components/Header/index.tsx',
     './src/pages/HomeTemplate/CreareProjectPage/index.tsx',
     './src/pages/HomeTemplate/ProjectPage/index.tsx',
+    './src/pages/HomeTemplate/Board/index.tsx',
+    './src/pages/HomeTemplate/Profile/index.tsx',
     './src/pages/UserLoginTemplate/LoginPage/index.tsx',
   ],
   presets: [],

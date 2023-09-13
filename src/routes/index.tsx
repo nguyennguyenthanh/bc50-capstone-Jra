@@ -11,12 +11,20 @@ const routes = [
         element: lazy(() => import('../pages/HomeTemplate/ProjectPage'))
       },
       {
-        path: '/create-project',
+        path: 'create-project',
         element: lazy(() => import('../pages/HomeTemplate/CreateProjectPage'))
       },
       {
-        path: '/update-project',
+        path: 'update-project',
         element: lazy(() => import('../pages/HomeTemplate/UpdateProjectPage'))
+      },
+      {
+        path: 'board',
+        element: lazy(() => import('../pages/HomeTemplate/Board'))
+      },
+      {
+        path: 'profiles',
+        element: lazy(() => import('../pages/HomeTemplate/Profile'))
       },
     ],
   },
@@ -28,7 +36,6 @@ const routes = [
         path: "auth",
         element: lazy(() => import("../pages/UserLoginTemplate/LoginPage")),
       },
-
     ],
   },
   {
