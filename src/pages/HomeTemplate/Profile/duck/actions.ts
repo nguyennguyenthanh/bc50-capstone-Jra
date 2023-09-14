@@ -32,7 +32,7 @@ export const actGetProfileUser = (profile: any, navigate: any) => {
             title: 'Profile Update Successfully',
             showConfirmButton: false,
             timer: 1500
-          })       
+          })
         }
       })
       .catch((error: any) => {

@@ -6,6 +6,7 @@ module.exports = {
     './src/pages/HomeTemplate/ProjectPage/index.tsx',
     './src/pages/HomeTemplate/Board/index.tsx',
     './src/pages/HomeTemplate/Profile/index.tsx',
+    './src/pages/HomeTemplate/UserPage/index.tsx',
     './src/pages/UserLoginTemplate/LoginPage/index.tsx',
   ],
   presets: [],

@@ -40,10 +40,10 @@ const ProfilePage: React.FC = () => {
           <Form
             name="normal_login"
             className="login-form"
-            initialValues={profileUser !== '' ? profileUser : initialValues}
+            initialValues={profileUser !== undefined ? profileUser : initialValues}
             onFinish={onFinish}
           >
-            <h1 className='font-medium text-4xl mb-4'>Sign Up Page</h1>
+            <h1 className='font-medium text-4xl mb-4'>{resultProfile ? JSON.parse(resultProfile)?.name : null}</h1>
 
             <Form.Item
               name="id"

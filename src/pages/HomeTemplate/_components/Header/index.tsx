@@ -37,7 +37,7 @@ export default function Navbar() {
   ];
   const items2: MenuProps['items'] = [
     {
-      label: <a href="#">View all users</a>,
+      label: <NavLink to={'/user'} style={{ textDecoration: 'none' }} className={'hover:font-medium'}>View all users</NavLink>,
       key: '0',
     },
   ];
