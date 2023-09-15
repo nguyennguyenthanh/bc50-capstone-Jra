@@ -32,7 +32,7 @@ export default function CreateProjectPage() {
 
   return (
     <div className='container mt-4'>
-      <h5 className='text-xl'><NavLink to={'/'} style={{ textDecoration: 'none' }} className='text-black transition-all delay-150 '>Projects</NavLink> / New project</h5>
+      <h5 className='text-xl'><NavLink to={'/'} style={{ textDecoration: 'none' }} className='transition-all delay-150 '>Projects</NavLink> / New project</h5>
       <h3 className='my-3'>New project</h3>
       <div className="container">
         <Form

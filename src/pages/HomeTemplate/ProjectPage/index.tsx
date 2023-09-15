@@ -1,5 +1,5 @@
 import React, { useEffect, Fragment, useState } from 'react';
-import { Button, Table, Input, Space } from 'antd';
+import { Button, Table, Input, Space, Avatar } from 'antd';
 import type { ColumnsType, TableProps } from 'antd/es/table';
 import { AudioOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -80,13 +80,13 @@ export default function ProjectPage() {
       return {
         key: index,
         id: item.id,
-        projectName: <NavLink to={'/board'} style={{ textDecoration: 'none' }}>{item.projectName}</NavLink>,
+        projectName: <NavLink to={'/board'}>{item.projectName}</NavLink>,
         categoryName: item.categoryName,
         creator: item.creator.name,
         members: item.members?.map((item: any, index: number | string) => <img key={index} src={item.avatar} alt={item.avatar} className='inline-block h-8 w-8 rounded-full ring-2 ring-white' />),
         actions: <Fragment >
           <Button key={1} style={{ paddingBottom: '40px' }} className='text-2xl border-none' onClick={() => handleInfoUpdateProject(item.id)}><EditOutlined style={{ color: 'blue' }} /></Button>
-          <Button key={2} style={{ paddingBottom: '43px', paddingTop: '0px' }} className='ml-1 text-2xl border-none' onClick={async () => {
+          <Button key={2} style={{ paddingBottom: '43px', paddingTop: '0px' }} className='ml-2 text-2xl border-none' onClick={async () => {
             if (window.confirm('Bạn có chắc muốn xóa dự án này ' + item.id)) {
               await dispatch(DeleteProject(item.id));
               await dispatch(fetchAllProject());

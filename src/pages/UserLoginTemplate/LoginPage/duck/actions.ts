@@ -10,7 +10,6 @@ export const loginData = (user: any, navigate: any) => {
         if (result.data.statusCode === 200) {
           dispatch(actLoginSuccess(result.data.content));
           localStorage.setItem('UserLogin', JSON.stringify(result.data.content));
-          alert(result.data.message)
           navigate('/', { replace: true })
         }
       })

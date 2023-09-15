@@ -41,11 +41,12 @@ export const DeleteUser = (id: any) => {
 export const UpdateUser = (user: any, navigate: any) => {
   return (dispatch: any) => {
     dispatch(actUpdateUserRequest());
-    api.put(`Users/editUser`, user)
+    const formatUser = { ...user, id: user.userId }
+    api.put('Users/editUser', formatUser)
       .then((result: Result<AllUsers>) => {
-        dispatch(actUpdateUserSuccess(result.data.content));
-        alert(result.data.message);
-        navigate("/", { replace: true });
+        if (result.data.statusCode === 200) {
+          dispatch(actUpdateUserSuccess(result.data.content));
+        }
       })
       .catch((error) => {
         dispatch(actUpdateUserFail(error));

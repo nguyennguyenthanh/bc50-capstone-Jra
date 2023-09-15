@@ -12,7 +12,7 @@ export interface Action {
     payload?: any;
 }
 export interface AllUsers {
-    userId: number,
+    userId: string,
     name: string,
     avatar: string,
     email: string,

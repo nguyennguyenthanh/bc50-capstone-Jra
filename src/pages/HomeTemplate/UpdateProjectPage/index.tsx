@@ -54,7 +54,7 @@ export default function UpdateProjectPage() {
   }
   return (
     <div className='container mt-4'>
-      <h5 className='text-xl'><NavLink to={'/'} style={{ textDecoration: 'none' }} className='text-black transition-all delay-150 '>Projects</NavLink>/<NavLink to={'/'} style={{ textDecoration: 'none' }} className='text-black transition-all delay-150 '> {
+      <h5 className='text-xl'><NavLink to={'/'} style={{ textDecoration: 'none' }} className='transition-all delay-150 '>Projects</NavLink>/<NavLink to={'/'} style={{ textDecoration: 'none' }} className='transition-all delay-150 '> {
         infoProject?.projectName
       }</NavLink> / New project</h5>
       <h3 className='my-3'>Update Project</h3>
