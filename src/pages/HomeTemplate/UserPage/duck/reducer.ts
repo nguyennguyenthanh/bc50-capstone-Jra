@@ -7,9 +7,10 @@ const userState: UserState<AllUsers> = {
   loading: false,
   data: null,
   dataDelete: null,
-  dataUpdate: null,
+  dataUpdate: null,  
   error: null,
   infoUser: undefined,
+  userSearch: undefined,
 }
 
 const allUserReducer = (state = userState, action: Action) => {
@@ -73,6 +74,11 @@ const allUserReducer = (state = userState, action: Action) => {
       state.loading = false;
       state.dataDelete = null;
       state.error = action.payload;
+      return { ...state }
+    }
+    //GET API USER TO PJpage
+    case ActionTypes.GET_USER_SEARCH: {
+      state.userSearch = action.payload;
       return { ...state }
     }
     default:

@@ -53,6 +53,18 @@ export const UpdateProject = (value: any, navigate: any) => {
   }
 }
 
+export const assignUserProject = (userProject: any) => {
+  return (dispatch: any) => {
+    dispatch(actassignUserProjectRequest());
+    api.post("Project/assignUserProject", userProject)
+      .then((result: Result<AllProjects>) => {
+        dispatch(actassignUserProjectSuccess(result.data.content));
+      })
+      .catch((error) => {
+        dispatch(actassignUserProjectFail(error));
+      })
+  }
+}
 
 //FETCH LIST PJ
 const actAllProjectRequest = (): Action => ({ type: ActionTypes.ALL_PROJECT_REQUEST });
@@ -91,5 +103,16 @@ const actDeleteProjectSuccess = (dataDelete: AllProjects[]): Action => ({
 });
 const actDeleteProjectFail = (error: any) => ({
   type: ActionTypes.DELETE_PROJECT_FAIL,
+  payload: error
+});
+
+//DELETE PJ
+const actassignUserProjectRequest = (): Action => ({ type: ActionTypes.ASSIGN_USER_REQUEST });
+const actassignUserProjectSuccess = (dataAssign: AllProjects[]): Action => ({
+  type: ActionTypes.ASSIGN_USER_SUCCESS,
+  payload: dataAssign
+});
+const actassignUserProjectFail = (error: any) => ({
+  type: ActionTypes.ASSIGN_USER_FAIL,
   payload: error
 });

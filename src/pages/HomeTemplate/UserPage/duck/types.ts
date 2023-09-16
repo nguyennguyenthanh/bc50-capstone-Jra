@@ -5,6 +5,7 @@ export interface UserState<T> {
     dataUpdate: T[] | null | T;
     error: any
     infoUser: T[] | null | T | undefined;
+    userSearch: T[] | null | T | undefined;
 }
 
 export interface Action {

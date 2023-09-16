@@ -7,9 +7,10 @@ const projectState: ProjectState<AllProjects> = {
   loading: false,
   data: null,
   dataDelete: null,
-  dataUpdate: null,
+  dataUpdate: null,  
   error: null,
   infoProject: undefined,
+  userProject: undefined,
 }
 
 const allProjectReducer = (state = projectState, action: Action) => {
@@ -72,6 +73,25 @@ const allProjectReducer = (state = projectState, action: Action) => {
     case ActionTypes.DELETE_PROJECT_FAIL: {
       state.loading = false;
       state.dataDelete = null;
+      state.error = action.payload;
+      return { ...state }
+    }
+    //Assign user project
+    case ActionTypes.ASSIGN_USER_REQUEST: {
+      state.loading = true;
+      state.userProject = null;
+      state.error = null;
+      return { ...state }
+    }
+    case ActionTypes.ASSIGN_USER_SUCCESS: {
+      state.loading = false;
+      state.userProject = action.payload;
+      state.error = null;
+      return { ...state }
+    }
+    case ActionTypes.ASSIGN_USER_FAIL: {
+      state.loading = false;
+      state.userProject = null;
       state.error = action.payload;
       return { ...state }
     }

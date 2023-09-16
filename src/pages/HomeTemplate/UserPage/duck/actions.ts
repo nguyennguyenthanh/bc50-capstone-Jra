@@ -3,12 +3,12 @@ import api from '../../../../utils/api';
 import { Action, AllUsers, Result } from './types';
 
 
-export const fetchAllUser = (id: any = 0) => {
+export const fetchAllUser = (keyword: any = 0) => {
   return (dispatch: any) => {
     dispatch(actAllUserRequest());
-    if (id !== 0 && id > 0) {
-      return api.get(`Users/getUser?keyword=${id}`, id)
-        .then((result: Result<AllUsers>) => {
+    if (keyword !== 0 && keyword > 0) {
+      return api.get(`Users/getUser?keyword=${keyword}`, keyword)
+        .then((result: Result<AllUsers>) => {  
           dispatch(actAllUserSuccess(result.data.content));
         })
         .catch((error) => {
@@ -54,8 +54,21 @@ export const UpdateUser = (user: any, navigate: any) => {
   }
 }
 
+// Get Api User to ProjectPage
+export const getApiUser = (keyword: any = 0) => {
+  return (dispatch: any) => {
+    dispatch(actAllUserRequest());
+    api.get(`Users/getUser?keyword=${keyword}`, keyword)
+      .then((result: Result<AllUsers>) => {
+        dispatch(actGetApiUser(result.data.content));
+      })
+      .catch((error) => {
+        dispatch(actAllUserFail(error));
+      })
+  }
+}
 
-//FETCH LIST PJ
+//FETCH LIST US
 const actAllUserRequest = (): Action => ({ type: ActionTypes.ALL_USER_REQUEST });
 const actAllUserSuccess = (data: AllUsers[]): Action => ({
   type: ActionTypes.ALL_USER_SUCCESS,
@@ -66,7 +79,7 @@ const actAllUserFail = (error: any) => ({
   payload: error
 });
 
-//UPDATE PJ
+//UPDATE US
 const actUpdateUserRequest = (): Action => ({ type: ActionTypes.UPDATE_USER_REQUEST });
 const actUpdateUserSuccess = (dataUpdate: AllUsers[]): Action => ({
   type: ActionTypes.UPDATE_USER_SUCCESS,
@@ -84,7 +97,7 @@ export const actUpdateSelectUser = (dataUpdate: AllUsers[]): Action => {
   }
 }
 
-//DELETE PJ
+//DELETE US
 const actDeleteUserRequest = (): Action => ({ type: ActionTypes.DELETE_USER_REQUEST });
 const actDeleteUserSuccess = (dataDelete: AllUsers[]): Action => ({
   type: ActionTypes.DELETE_USER_SUCCESS,
@@ -94,3 +107,12 @@ const actDeleteUserFail = (error: any) => ({
   type: ActionTypes.DELETE_USER_FAIL,
   payload: error
 });
+
+//GET USER API TO PJPage
+
+export const actGetApiUser = (data: AllUsers[]): Action => {
+  return {
+    type: ActionTypes.GET_USER_SEARCH,
+    payload: data
+  }
+}

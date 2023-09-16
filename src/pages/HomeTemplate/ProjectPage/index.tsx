@@ -1,16 +1,17 @@
 import React, { useEffect, Fragment, useState } from 'react';
-import { Button, Table, Input, Space, Avatar } from 'antd';
-import type { ColumnsType, TableProps } from 'antd/es/table';
-import { AudioOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Table, Input, Avatar, Popover, AutoComplete } from 'antd';
+import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { DeleteProject, actUpdateSelectProject, fetchAllProject } from './duck/actions';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { DeleteProject, actUpdateSelectProject, assignUserProject, fetchAllProject } from './duck/actions';
+import { actGetApiUser, fetchAllUser, getApiUser } from '../UserPage/duck/actions';
 
 export default function ProjectPage() {
   const dispatch: any = useDispatch();
   const navigate: any = useNavigate();
   const dataProject: any = useSelector((state: any) => state.allProjectReducer.data);
-  const [creator, setNameCreator] = useState([]);
+  const { userSearch } = useSelector((state: any) => state.allUserReducer);
+  const [valueUser, setValueUser] = useState('');
   useEffect(() => {
     dispatch(fetchAllProject());
   }, []);
@@ -20,6 +21,7 @@ export default function ProjectPage() {
     dispatch(actUpdateSelectProject(project));
     navigate("/update-project", { replace: true });
   }
+
   //Table Antd
   const columns = [
     {
@@ -66,6 +68,43 @@ export default function ProjectPage() {
       title: 'Members',
       dataIndex: 'members',
       width: '15%',
+      render: (text: any, record: any, index: any) => {
+        return <>
+          {record.members?.slice(0, 2).map((item: any, index: number | string) => {
+            return <img key={index} src={item.avatar} alt={item.avatar} className='inline-block h-8 w-8 rounded-full ring-2 ring-white' />
+          })}
+          {record.members?.length > 3 ? <Avatar className='ring-2 ring-white'>...</Avatar> : ''}
+          <Popover className='rounded-full w-8 h-8' placement="bottom" title={"Add User"} content={() => {
+            return <AutoComplete
+              value={valueUser}
+              onSearch={(value: any) => {
+                dispatch(getApiUser(value))
+              }}
+              options={userSearch?.map((user: any, index: any) => {
+                return {
+                  label: user.name,
+                  value: user.userId.toString(),
+                }
+              })}
+              onSelect={async (value: any, option: any) => {
+                await setValueUser(option.label)
+                const dataAddMember = {
+                  projectId: record.id,
+                  userId: Number(option.value),
+                }
+                await dispatch(assignUserProject(dataAddMember));
+                await dispatch(fetchAllProject());
+              }}
+              onChange={(value: any) => {
+                setValueUser(value);
+              }}
+              style={{ width: '100%' }}
+              placeholder="input here" />
+          }} trigger="click">
+            <Button className='inline-flex justify-center items-center top-0.5'>+</Button>
+          </Popover>
+        </>
+      }
     },
     {
       title: 'Actions',
@@ -83,7 +122,7 @@ export default function ProjectPage() {
         projectName: <NavLink to={'/board'}>{item.projectName}</NavLink>,
         categoryName: item.categoryName,
         creator: item.creator.name,
-        members: item.members?.map((item: any, index: number | string) => <img key={index} src={item.avatar} alt={item.avatar} className='inline-block h-8 w-8 rounded-full ring-2 ring-white' />),
+        members: item.members,
         actions: <Fragment >
           <Button key={1} style={{ paddingBottom: '40px' }} className='text-2xl border-none' onClick={() => handleInfoUpdateProject(item.id)}><EditOutlined style={{ color: 'blue' }} /></Button>
           <Button key={2} style={{ paddingBottom: '43px', paddingTop: '0px' }} className='ml-2 text-2xl border-none' onClick={async () => {

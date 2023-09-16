@@ -172,6 +172,7 @@ export default function UserPage() {
         onSearch={onSearch}
       />
       <Modal
+        forceRender
         title={<div className='flex'>
           <h3>Edit User</h3>
         </div>}
