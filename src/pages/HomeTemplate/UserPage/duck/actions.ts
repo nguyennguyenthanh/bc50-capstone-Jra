@@ -1,6 +1,8 @@
 import * as ActionTypes from './constants';
 import api from '../../../../utils/api';
 import { Action, AllUsers, Result } from './types';
+import Swal from 'sweetalert2';
+
 
 
 export const fetchAllUser = (keyword: any = 0) => {
@@ -8,7 +10,7 @@ export const fetchAllUser = (keyword: any = 0) => {
     dispatch(actAllUserRequest());
     if (keyword !== 0 && keyword > 0) {
       return api.get(`Users/getUser?keyword=${keyword}`, keyword)
-        .then((result: Result<AllUsers>) => {  
+        .then((result: Result<AllUsers>) => {
           dispatch(actAllUserSuccess(result.data.content));
         })
         .catch((error) => {
@@ -34,6 +36,11 @@ export const DeleteUser = (id: any) => {
       })
       .catch((error) => {
         dispatch(actDeleteUserFail(error));
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'This account belongs to another project and cannot be deleted',
+        })
       })
   }
 }
@@ -61,6 +68,7 @@ export const getApiUser = (keyword: any = 0) => {
     api.get(`Users/getUser?keyword=${keyword}`, keyword)
       .then((result: Result<AllUsers>) => {
         dispatch(actGetApiUser(result.data.content));
+        console.log(result.data.content);
       })
       .catch((error) => {
         dispatch(actAllUserFail(error));

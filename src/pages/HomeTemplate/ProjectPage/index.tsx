@@ -1,17 +1,21 @@
-import React, { useEffect, Fragment, useState } from 'react';
+import { useEffect, Fragment, useState, useRef } from 'react';
 import { Button, Table, Input, Avatar, Popover, AutoComplete } from 'antd';
-import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, SearchOutlined, CloseSquareOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { DeleteProject, actUpdateSelectProject, assignUserProject, fetchAllProject } from './duck/actions';
-import { actGetApiUser, fetchAllUser, getApiUser } from '../UserPage/duck/actions';
+import { DeleteUser, getApiUser } from '../UserPage/duck/actions';
+import { fetchProjectDetail } from '../Board/duck/actions';
 
 export default function ProjectPage() {
   const dispatch: any = useDispatch();
   const navigate: any = useNavigate();
   const dataProject: any = useSelector((state: any) => state.allProjectReducer.data);
+  console.log("🚀 ~ file: index.tsx:14 ~ ProjectPage ~ dataProject:", dataProject)
   const { userSearch } = useSelector((state: any) => state.allUserReducer);
   const [valueUser, setValueUser] = useState('');
+  const searchRef: any = useRef(null);
+
   useEffect(() => {
     dispatch(fetchAllProject());
   }, []);
@@ -69,16 +73,54 @@ export default function ProjectPage() {
       dataIndex: 'members',
       width: '15%',
       render: (text: any, record: any, index: any) => {
+        console.log("🚀 ~ file: index.tsx:75 ~ ProjectPage ~ record:", record)
         return <>
           {record.members?.slice(0, 2).map((item: any, index: number | string) => {
-            return <img key={index} src={item.avatar} alt={item.avatar} className='inline-block h-8 w-8 rounded-full ring-2 ring-white' />
+            return <Popover key={index} placement="bottom" title="Delete User In This Project" content={() => {
+              return <table className='table'>
+                <thead>
+                  <tr>
+                    <th>Id</th>
+                    <th>Avatar</th>
+                    <th>Name</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {record.members?.map((item: any, index: any) => {
+                    return <tr key={index} className='leading-10'>
+                      <td >{item.userId}</td>
+                      <td><Avatar src={item.avatar} /></td>
+                      <td>{item.name}</td>
+                      <td className='text-center'>
+                        <button className='mt-1' onClick={async () => {
+                          if (window.confirm('Are you sure to remove this user from the project?' + item.userId)) {
+                            await dispatch(DeleteUser(item.userId));
+                            await dispatch(fetchAllProject());
+                          }
+                        }}><CloseSquareOutlined className='text-red-600 text-2xl hover:bg-red-600 hover:text-white transition-all delay-150 rounded' /></button>
+                      </td>
+                    </tr>
+                  })}
+                </tbody>
+              </table>
+            }}>
+              <img key={index} src={item.avatar} alt={item.avatar} className='inline-block h-8 w-8 rounded-full ring-2 ring-white' />
+
+            </Popover>
           })}
           {record.members?.length > 3 ? <Avatar className='ring-2 ring-white'>...</Avatar> : ''}
-          <Popover className='rounded-full w-8 h-8' placement="bottom" title={"Add User"} content={() => {
+          <Popover className='rounded-full w-8 h-8' placement="bottom" title="Add User" content={() => {
             return <AutoComplete
               value={valueUser}
               onSearch={(value: any) => {
-                dispatch(getApiUser(value))
+                //Debounce search
+                if (searchRef.current) {
+                  clearTimeout(searchRef.current);
+                }
+                searchRef.current = setTimeout(() => {
+                  dispatch(getApiUser(value))
+                }, 300)
               }}
               options={userSearch?.map((user: any, index: any) => {
                 return {
@@ -86,11 +128,11 @@ export default function ProjectPage() {
                   value: user.userId.toString(),
                 }
               })}
-              onSelect={async (value: any, option: any) => {
-                await setValueUser(option.label)
+              onSelect={async (value: any, options: any) => {
+                await setValueUser(options.label)
                 const dataAddMember = {
                   projectId: record.id,
-                  userId: Number(option.value),
+                  userId: Number(options.value),
                 }
                 await dispatch(assignUserProject(dataAddMember));
                 await dispatch(fetchAllProject());
@@ -99,7 +141,7 @@ export default function ProjectPage() {
                 setValueUser(value);
               }}
               style={{ width: '100%' }}
-              placeholder="input here" />
+              placeholder="Enter name user" />
           }} trigger="click">
             <Button className='inline-flex justify-center items-center top-0.5'>+</Button>
           </Popover>
@@ -119,14 +161,16 @@ export default function ProjectPage() {
       return {
         key: index,
         id: item.id,
-        projectName: <NavLink to={'/board'}>{item.projectName}</NavLink>,
+        projectName: <NavLink to={'/board'} onClick={()=>{
+          dispatch(fetchProjectDetail(item.id))
+        }}>{item.projectName}</NavLink>,
         categoryName: item.categoryName,
         creator: item.creator.name,
         members: item.members,
         actions: <Fragment >
           <Button key={1} style={{ paddingBottom: '40px' }} className='text-2xl border-none' onClick={() => handleInfoUpdateProject(item.id)}><EditOutlined style={{ color: 'blue' }} /></Button>
           <Button key={2} style={{ paddingBottom: '43px', paddingTop: '0px' }} className='ml-2 text-2xl border-none' onClick={async () => {
-            if (window.confirm('Bạn có chắc muốn xóa dự án này ' + item.id)) {
+            if (window.confirm('Are you sure to remove this project?' + item.id)) {
               await dispatch(DeleteProject(item.id));
               await dispatch(fetchAllProject());
             }

@@ -5,6 +5,7 @@ import createProjectReducer from './../pages/HomeTemplate/CreateProjectPage/duck
 import allProjectReducer from '../pages/HomeTemplate/ProjectPage/duck/reducer';
 import profileUserReducer from './../pages/HomeTemplate/Profile/duck/reducer';
 import allUserReducer from './../pages/HomeTemplate/UserPage/duck/reducer';
+import boardReducer from './../pages/HomeTemplate/Board/duck/reducer';
 
 const rootReducer = combineReducers({
     loginReducer,
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
     allProjectReducer,
     profileUserReducer,
     allUserReducer,
+    boardReducer,
 })
 
 export default rootReducer;

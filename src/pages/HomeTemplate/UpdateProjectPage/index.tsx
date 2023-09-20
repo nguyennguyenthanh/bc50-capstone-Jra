@@ -1,10 +1,11 @@
-import React, { useRef, useEffect, useState } from 'react'
-import { Button, Form, Input, message, Space, Select } from 'antd';
+import { useEffect, useState } from 'react'
+import { Button, Form, Input, Space, Select } from 'antd';
 import { Editor } from '@tinymce/tinymce-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { UpdateProject, fetchAllProject } from '../ProjectPage/duck/actions';
 import { fetchProjectCategory } from '../CreateProjectPage/duck/actions';
+import { fetchProjectDetail } from '../Board/duck/actions';
 
 
 
@@ -15,6 +16,7 @@ export default function UpdateProjectPage() {
   const navigate: any = useNavigate();
   const { data } = useSelector((state: any) => state.createProjectReducer);
   const { infoProject } = useSelector((state: any) => state.allProjectReducer);
+  console.log("🚀 ~ file: index.tsx:20 ~ UpdateProjectPage ~ infoProject:", infoProject)
 
 
   useEffect(() => {
@@ -54,9 +56,11 @@ export default function UpdateProjectPage() {
   }
   return (
     <div className='container mt-4'>
-      <h5 className='text-xl'><NavLink to={'/'} style={{ textDecoration: 'none' }} className='transition-all delay-150 '>Projects</NavLink>/<NavLink to={'/'} style={{ textDecoration: 'none' }} className='transition-all delay-150 '> {
-        infoProject?.projectName
-      }</NavLink> / New project</h5>
+      <h5 className='text-xl'><NavLink to={'/'} style={{ textDecoration: 'none' }} className='transition-all delay-150 '>Projects</NavLink>/<NavLink to={'/board'} style={{ textDecoration: 'none' }} className='transition-all delay-150 ' onClick={() => {
+        dispatch(fetchProjectDetail(infoProject?.id))
+      }}> {
+          infoProject?.projectName
+        }</NavLink> / New project</h5>
       <h3 className='my-3'>Update Project</h3>
       <div className="container">
         <Form

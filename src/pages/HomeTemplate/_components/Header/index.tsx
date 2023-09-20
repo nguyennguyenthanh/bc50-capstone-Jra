@@ -136,7 +136,7 @@ export default function Navbar() {
             Create Task
           </a>
           <Drawer
-            title="Create a new account"
+            title="Create Task"
             width={720}
             onClose={onClose}
             open={open}
@@ -264,17 +264,17 @@ export default function Navbar() {
               Create Task
             </a>
             <Drawer
-              title="Create a new account"
+              title="Create Task"
               width={720}
               onClose={onClose}
               open={open}
               bodyStyle={{ paddingBottom: 80 }}
               extra={
-                <Space>
-                  <Button onClick={onClose}>Cancel</Button>
-                  <Button onClick={onClose} type="primary">
+                <Space style={{ position: 'absolute', top: '85%', right: '3%', }}>
+                  <Button onClick={onClose} type="primary" className='bg-blue-500'>
                     Submit
                   </Button>
+                  <Button onClick={onClose}>Cancel</Button>
                 </Space>
               }
             >

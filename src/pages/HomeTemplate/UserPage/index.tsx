@@ -110,7 +110,7 @@ export default function UserPage() {
         actions: <Fragment >
           <Button key={1} style={{ paddingBottom: '40px' }} className='text-2xl border-none' onClick={() => handleInfoUpdateUser(item.userId)}><EditOutlined style={{ color: 'blue' }} /></Button>
           <Button key={2} style={{ paddingBottom: '43px', paddingTop: '0px' }} className='ml-1 text-2xl border-none' onClick={async () => {
-            if (window.confirm('Bạn có chắc muốn xóa mã người dùng này' + item.userId)) {
+            if (window.confirm('Are you sure to remove this ID user from the list?' + item.userId)) {
               await dispatch(DeleteUser(item.userId));
               await dispatch(fetchAllUser());
             }
