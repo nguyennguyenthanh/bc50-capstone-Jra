@@ -30,6 +30,7 @@ export default function UpdateProjectPage() {
     value.description = infoProject?.description;
     value.creator = infoProject?.creator.id;
     dispatch(UpdateProject(value, navigate));
+    form.resetFields();
   };
 
   const handleEditorChange = (content: any, editor: any) => {

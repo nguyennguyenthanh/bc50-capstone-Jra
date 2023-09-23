@@ -13,6 +13,7 @@ import { fetchProjectDetail } from './duck/actions';
 export default function Board() {
   const dispatch: any = useDispatch();
   const dataBoard = useSelector((state: any) => state.boardReducer.data);
+  console.log("🚀 ~ file: index.tsx:16 ~ Board ~ dataBoard:", dataBoard)
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const strResult: string | null = localStorage.getItem('BoardProject');

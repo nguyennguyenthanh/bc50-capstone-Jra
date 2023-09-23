@@ -7,6 +7,7 @@ import { DeleteProject, actUpdateSelectProject, assignUserProject, fetchAllProje
 import { DeleteUser, getApiUser } from '../UserPage/duck/actions';
 import { fetchProjectDetail } from '../Board/duck/actions';
 
+
 export default function ProjectPage() {
   const dispatch: any = useDispatch();
   const navigate: any = useNavigate();
@@ -20,7 +21,7 @@ export default function ProjectPage() {
   }, []);
 
   const handleInfoUpdateProject = (id: any) => {
-    const project = dataProject?.find((project: any) => project.id === id);    
+    const project = dataProject?.find((project: any) => project.id === id);
     dispatch(actUpdateSelectProject(project));
     navigate("/update-project", { replace: true });
   }

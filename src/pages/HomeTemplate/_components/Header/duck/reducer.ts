@@ -1,11 +1,12 @@
-import { Action, AllTask, HeaderState, Priority, Status, TaskType } from './types';
+import { Action, AllTask, GetUserByPJ, HeaderState, Priority, Status, TaskType } from './types';
 import * as ActionTypes from './constants';
 
 
-const headerState: HeaderState<TaskType | Priority | Status | AllTask> = {
+const headerState: HeaderState<TaskType | Priority | Status | AllTask | GetUserByPJ> = {
   loading: false,
   data: null,
   dataCreateTask: null,
+  dataUserByProject: null,
   error: null,
   Priority: [],
   Status: [],
@@ -92,6 +93,25 @@ const headerReducer = (state = headerState, action: Action) => {
     }
     case ActionTypes.INFO_TASK: {
       state.infoTask = action.payload;
+      return { ...state }
+    }
+    //User by project
+    case ActionTypes.USER_BY_PROJECT_REQUEST: {
+      state.loading = true;
+      state.dataUserByProject = null;
+      state.error = null;
+      return { ...state }
+    }
+    case ActionTypes.USER_BY_PROJECT_SUCCESS: {
+      state.loading = false;
+      state.dataUserByProject = action.payload;
+      state.error = null;
+      return { ...state }
+    }
+    case ActionTypes.USER_BY_PROJECT_FAIL: {
+      state.loading = false;
+      state.dataUserByProject = null;
+      state.error = action.payload;
       return { ...state }
     }
     default:

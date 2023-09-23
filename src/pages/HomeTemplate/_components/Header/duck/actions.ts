@@ -1,6 +1,6 @@
 import * as ActionTypes from './constants';
 import api from '../../../../../utils/api';
-import { Action, TaskType, Result, Priority, Status, AllTask } from './types';
+import { Action, TaskType, Result, Priority, Status, AllTask, GetUserByPJ } from './types';
 import Swal from 'sweetalert2';
 
 export const fetchTaskType = () => {
@@ -44,6 +44,21 @@ export const fetchStatus = () => {
       })
       .catch((error: any) => {
         dispatch(actStatusFail(error));
+      })
+  }
+}
+
+export const getUserByProjectId = (id: number) => {
+  return (dispatch: any) => {
+    dispatch(actGetUserByPJRequest());
+    api.get(`Users/getUserByProjectId?idProject=${id}`)
+      .then((result: Result<GetUserByPJ>) => {
+        if (result.data.statusCode === 200) {
+          dispatch(actGetUserByPJSuccess(result.data.content))
+        }
+      })
+      .catch((error: any) => {
+        dispatch(actGetUserByPJFail(error));
       })
   }
 }
@@ -115,4 +130,14 @@ const actCreateTaskFail = (error: any) => ({
 export const actInfoTask = (infoTask: AllTask[]): Action => ({
   type: ActionTypes.INFO_TASK,
   payload: infoTask
+})
+//Priority
+const actGetUserByPJRequest = (): Action => ({ type: ActionTypes.USER_BY_PROJECT_REQUEST })
+const actGetUserByPJSuccess = (dataUserByProject: GetUserByPJ[]): Action => ({
+  type: ActionTypes.USER_BY_PROJECT_SUCCESS,
+  payload: dataUserByProject
+})
+const actGetUserByPJFail = (error: any) => ({
+  type: ActionTypes.USER_BY_PROJECT_FAIL,
+  payload: error
 })

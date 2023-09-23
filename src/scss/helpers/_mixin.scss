@@ -1,0 +1,70 @@
+@mixin Reponsive ($type) {
+    @if $type ==$xxs {
+        @media screen and (max-width:$xxs) {
+            @content;
+        }
+    }@else if $type ==$xs {
+        @media screen and (max-width:$xs) {
+            @content;
+        }
+    }
+    @else if $type ==$sm {
+        @media screen and (max-width:$sm) {
+            @content;
+        }
+    }
+    @else if $type ==$md {
+        @media screen and (max-width:$md) {
+            @content;
+        }
+    }
+    @else  {
+        @media screen and (max-width:$lg) {
+            @content;
+        }
+    } 
+}
+
+@mixin ReponsiveNTN ($type) {
+    @if $type ==$xxs1 {
+        @media screen and (max-width:$xxs1) {
+            @content;
+        }
+    }@else if $type ==$xs1 {
+        @media screen and (max-width:$xs1) {
+            @content;
+        }
+    }@else if $type == $sm1 {
+        @media screen and (max-width:$sm1) {
+            @content;
+        }
+    }@else if $type == $md1 {
+        @media screen and (max-width:$md1) {
+            @content;
+        }
+    }@else if $type == $lg1 {
+        @media screen and (max-width:$lg1) {
+            @content;
+        }
+    } 
+}
+
+@mixin ReponsiveTicket ($type) {
+    @if $type ==$xxs2 {
+        @media screen and (max-width:$xxs2) {
+            @content;
+        }
+    }@else if $type ==$xs2 {
+        @media screen and (max-width:$xs2) {
+            @content;
+        }
+    }@else if $type == $sm2 {
+        @media screen and (max-width:$sm2) {
+            @content;
+        }
+    }@else if $type == $md2 {
+        @media screen and (max-width:$md2) {
+            @content;
+        }
+    }
+}

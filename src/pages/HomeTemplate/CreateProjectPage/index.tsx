@@ -21,6 +21,7 @@ export default function CreateProjectPage() {
     value.description = description;
     value.alias = '';
     dispatch(actCreateProject(value, navigate));
+    form.resetFields();
   };
 
   const handleEditorChange = (content: any, editor: any) => {

@@ -5,9 +5,11 @@ import App from './App';
 import "jquery/dist/jquery.min.js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.js";
+import './scss/index.scss'
 import reportWebVitals from './reportWebVitals';
 import store from './store';
 import { Provider } from 'react-redux';
+
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

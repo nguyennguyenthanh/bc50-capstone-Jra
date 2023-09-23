@@ -8,7 +8,7 @@ import { actLogout } from '../../../UserLoginTemplate/LoginPage/duck/actions';
 import { actProfileUser } from '../../Profile/duck/actions';
 import { Editor } from '@tinymce/tinymce-react';
 import type { SizeType } from 'antd/es/config-provider/SizeContext';
-import { actCreateTask, actInfoTask, fetchPriority, fetchStatus, fetchTaskType } from './duck/actions';
+import { actCreateTask, actInfoTask, fetchPriority, fetchStatus, fetchTaskType, getUserByProjectId } from './duck/actions';
 import { fetchAllUser } from '../../UserPage/duck/actions';
 import { fetchAllProject } from '../../ProjectPage/duck/actions';
 
@@ -45,16 +45,17 @@ export default function Navbar() {
   const selectRef: any = useRef();
   const handleChange = useCallback((value: any) => {
     selectRef.current.blur() //whenever a user triggers value change, we call `blur()` on `Select`
+
   }, [])
-  
+
   const dispatch: any = useDispatch();
   const navigate: any = useNavigate();
   const dataProject: any = useSelector((state: any) => state.allProjectReducer.data);
   const dataTaskType: any = useSelector((state: any) => state.headerReducer.data);
-  const { Priority, Status, infoTask } = useSelector((state: any) => state.headerReducer);
-  const { userSearch, data } = useSelector((state: any) => state.allUserReducer);
+  const { Priority, Status, infoTask, dataUserByProject } = useSelector((state: any) => state.headerReducer);
   const [description, setDesciption] = useState();
-  const userOptions = data?.map((item: any, index: any) => {
+
+  const userOptions = dataUserByProject?.map((item: any, index: any) => {
     return { value: item.userId, label: item.name }
   })
   useEffect(() => {
@@ -167,11 +168,12 @@ export default function Navbar() {
   //SUBMIT FORM
   const onFinish = async (values: any) => {
     values.description = description;
-    values.assigners = infoTask?.assigners;
+    values.assigners = infoTask?.listUserAsign;
     values.originalEstimate = Number(values.originalEstimate);
     values.timeTrackingSpent = Number(values.timeTrackingSpent);
-    dispatch(actCreateTask(values, navigate));
-    dispatch(actInfoTask(values))
+    await dispatch(actCreateTask(values, navigate));
+    await dispatch(actInfoTask(values));
+    await form.resetFields();
   };
   const handleEditorChange = (content: any, editor: any) => {
     setDesciption(content);
@@ -182,13 +184,13 @@ export default function Navbar() {
     ],
     taskName: '',
     description: '',
-    statusId: '',
+    statusId: Status?.statusId,
     originalEstimate: 0,
     timeTrackingSpent: 0,
     timeTrackingRemaining: 0,
-    projectId: 0,
-    typeId: 0,
-    priorityId: 0
+    projectId: dataProject?.id,
+    typeId: dataTaskType?.id,
+    priorityId: Priority?.priorityId
   }
   return (
     <header className="p-2 dark:bg-gray-800 dark:text-gray-100 border-b-2 ">
@@ -242,7 +244,9 @@ export default function Navbar() {
                     label="Project"
                     rules={[{ required: true, message: 'Please select an Project' }]}
                   >
-                    <Select placeholder="Please select an Project">
+                    <Select placeholder="Please select an Project" onChange={(idProject: number) => {
+                      dispatch(getUserByProjectId(idProject))
+                    }}>
                       {dataProject?.map((project: any, index: any) => {
                         return <Option key={index} value={project.id}>{project.projectName}</Option>
                       })}
@@ -353,19 +357,18 @@ export default function Navbar() {
                 </Col>
               </Row>
 
-
               <Row gutter={16}>
                 <Col span={24}>
                   <Form.Item
                     name="assigners"
                     label="Assigners"
-                    rules={[{ required: true, message: 'Please select an owner' }]}
+                    rules={[{ required: true, message: 'Please select an Assigners' }]}
                   >
                     <Space direction="vertical" style={{ width: '100%' }}>
                       <Select
                         mode="multiple"
                         size={size}
-                        placeholder="Please select"
+                        placeholder="Please select an Assigners"
                         onChange={handleChange}
                         style={{ width: '100%' }}
                         options={userOptions}

@@ -1,7 +1,7 @@
 import * as ActionTypes from './constants';
 import api from '../../../../utils/api';
 import { Action, AllProjects, Result } from './types';
-
+import Swal from 'sweetalert2';
 
 export const fetchAllProject = (id: any = 0) => {
   return (dispatch: any) => {
@@ -44,7 +44,13 @@ export const UpdateProject = (value: any, navigate: any) => {
     api.put(`Project/updateProject?projectId=${value.id}`, value)
       .then((result: Result<AllProjects>) => {
         dispatch(actUpdateProjectSuccess(result.data.content));
-        alert(result.data.message);
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'Update Project Successfully',
+          showConfirmButton: false,
+          timer: 1500
+        })
         navigate("/", { replace: true });
       })
       .catch((error) => {

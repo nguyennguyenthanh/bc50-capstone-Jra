@@ -147,6 +147,7 @@ export default function UserPage() {
     await dispatch(UpdateUser(values, navigate));
     await handleCancel()
     await dispatch(fetchAllUser());
+    form.resetFields();
   };
 
   const renderError = () => {

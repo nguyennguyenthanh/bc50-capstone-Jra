@@ -1,6 +1,7 @@
 import { Action, CreateProject, ProjectCategory, Result } from './types';
 import * as ActionTypes from './constants';
 import api from '../../../../utils/api';
+import Swal from 'sweetalert2';
 
 export const fetchProjectCategory = () => {
   return (dispatch: any) => {
@@ -28,7 +29,11 @@ export const actCreateProject = (project: any, navigate: any) => {
       .catch((error: any) => {
         if (!localStorage.getItem('UserLogin')) {
           dispatch(actCreateProjectFail(error));
-          alert('Login Please!!!')
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Login Please!!!',
+          })
           navigate('/user-login/auth', { replace: true });
         }
       })
