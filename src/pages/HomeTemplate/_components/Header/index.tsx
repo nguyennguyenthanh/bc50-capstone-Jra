@@ -1,18 +1,71 @@
-import React, { useState, Fragment, useEffect } from 'react';
+import React, { useState, Fragment, useEffect, useCallback, useRef } from 'react';
 import { DownOutlined, UserOutlined, LogoutOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Dropdown, Space, Button, Col, DatePicker, Drawer, Form, Input, Row, Select } from 'antd';
-import { NavLink, Navigate, useNavigate } from 'react-router-dom';
+import { Dropdown, Space, Button, Col, Drawer, Form, Input, Row, Select, RadioChangeEvent, Slider } from 'antd';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { actLogout } from '../../../UserLoginTemplate/LoginPage/duck/actions';
-import { actProfileUser, fetchProfileUser } from '../../Profile/duck/actions';
+import { actProfileUser } from '../../Profile/duck/actions';
+import { Editor } from '@tinymce/tinymce-react';
+import type { SizeType } from 'antd/es/config-provider/SizeContext';
+import { actCreateTask, actInfoTask, fetchPriority, fetchStatus, fetchTaskType } from './duck/actions';
+import { fetchAllUser } from '../../UserPage/duck/actions';
+import { fetchAllProject } from '../../ProjectPage/duck/actions';
 
 
 const { Option } = Select;
 
+interface stateTimeTracking {
+  timeTrackingSpent: number,
+  timeTrackingRemaining: number,
+}
+
 export default function Navbar() {
+  const [form] = Form.useForm<{
+    listUserAsign: [
+      number
+    ],
+    taskName: string,
+    description: string,
+    statusId: string,
+    originalEstimate: number,
+    timeTrackingSpent: number,
+    timeTrackingRemaining: number,
+    projectId: number,
+    typeId: number,
+    priorityId: number
+  }>();
+  const [open, setOpen] = useState(false);
+  const [size, setSize] = useState<SizeType>('middle');
+  const [timeTracking, setTimeTracking] = useState<stateTimeTracking>({
+    timeTrackingSpent: 0,
+    timeTrackingRemaining: 0,
+  });
+  //Close select after choose
+  const selectRef: any = useRef();
+  const handleChange = useCallback((value: any) => {
+    selectRef.current.blur() //whenever a user triggers value change, we call `blur()` on `Select`
+  }, [])
+  
   const dispatch: any = useDispatch();
   const navigate: any = useNavigate();
+  const dataProject: any = useSelector((state: any) => state.allProjectReducer.data);
+  const dataTaskType: any = useSelector((state: any) => state.headerReducer.data);
+  const { Priority, Status, infoTask } = useSelector((state: any) => state.headerReducer);
+  const { userSearch, data } = useSelector((state: any) => state.allUserReducer);
+  const [description, setDesciption] = useState();
+  const userOptions = data?.map((item: any, index: any) => {
+    return { value: item.userId, label: item.name }
+  })
+  useEffect(() => {
+    dispatch(fetchTaskType());
+    dispatch(fetchPriority());
+    dispatch(fetchAllUser());
+    dispatch(fetchAllProject());
+    dispatch(fetchStatus());
+  }, [])
+
+
   let isValid: boolean = true;
   let name: string = '';
   if (localStorage.getItem('UserLogin')) {
@@ -81,7 +134,7 @@ export default function Navbar() {
 
   ];
   //Drawer
-  const [open, setOpen] = useState(false);
+
 
   const showDrawer = () => {
     setOpen(true);
@@ -102,6 +155,40 @@ export default function Navbar() {
 
   const handleProfileUser = () => {
     dispatch(actProfileUser(dataProfileUser));
+  }
+
+  //SELECT
+
+
+  const handleSizeChange = (e: RadioChangeEvent) => {
+    setSize(e.target.value);
+  };
+
+  //SUBMIT FORM
+  const onFinish = async (values: any) => {
+    values.description = description;
+    values.assigners = infoTask?.assigners;
+    values.originalEstimate = Number(values.originalEstimate);
+    values.timeTrackingSpent = Number(values.timeTrackingSpent);
+    dispatch(actCreateTask(values, navigate));
+    dispatch(actInfoTask(values))
+  };
+  const handleEditorChange = (content: any, editor: any) => {
+    setDesciption(content);
+  }
+  const initialValues = {
+    listUserAsign: [
+      0
+    ],
+    taskName: '',
+    description: '',
+    statusId: '',
+    originalEstimate: 0,
+    timeTrackingSpent: 0,
+    timeTrackingRemaining: 0,
+    projectId: 0,
+    typeId: 0,
+    priorityId: 0
   }
   return (
     <header className="p-2 dark:bg-gray-800 dark:text-gray-100 border-b-2 ">
@@ -141,93 +228,155 @@ export default function Navbar() {
             onClose={onClose}
             open={open}
             bodyStyle={{ paddingBottom: 80 }}
-            extra={
-              <Space>
-                <Button onClick={onClose}>Cancel</Button>
-                <Button onClick={onClose} type="primary">
-                  Submit
-                </Button>
-              </Space>
-            }
           >
-            <Form layout="vertical" hideRequiredMark>
+            <Form
+              form={form}
+              layout="vertical"
+              initialValues={initialValues}
+              onFinish={onFinish}
+            >
               <Row gutter={16}>
-                <Col span={12}>
+                <Col span={24}>
                   <Form.Item
-                    name="name"
-                    label="Name"
-                    rules={[{ required: true, message: 'Please enter user name' }]}
+                    name="projectId"
+                    label="Project"
+                    rules={[{ required: true, message: 'Please select an Project' }]}
                   >
-                    <Input placeholder="Please enter user name" />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    name="url"
-                    label="Url"
-                    rules={[{ required: true, message: 'Please enter url' }]}
-                  >
-                    <Input
-                      style={{ width: '100%' }}
-                      addonBefore="http://"
-                      addonAfter=".com"
-                      placeholder="Please enter url"
-                    />
+                    <Select placeholder="Please select an Project">
+                      {dataProject?.map((project: any, index: any) => {
+                        return <Option key={index} value={project.id}>{project.projectName}</Option>
+                      })}
+                    </Select>
                   </Form.Item>
                 </Col>
               </Row>
+
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item
+                    name="taskName"
+                    label="Task name"
+                    rules={[{ required: true, message: 'Please enter Task name' }]}
+                  >
+                    <Input placeholder='Task name' />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item
+                    name="statusId"
+                    label="Status"
+                    rules={[{ required: true, message: 'Please select an Status' }]}
+                  >
+                    <Select placeholder="Please select an Status">
+                      {Status?.map((status: any, index: any) => <Option key={index} value={status.statusId}>{status.statusName}</Option>)}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
-                    name="owner"
-                    label="Owner"
+                    name="priorityId"
+                    label="Priority"
+                    rules={[{ required: true, message: 'Please select an Priority' }]}
+                  >
+                    <Select placeholder="Please select an Priority">
+                      {Priority?.map((priority: any, index: any) => {
+                        return <Option key={index} value={priority.priorityId}>{priority.priority}</Option>
+                      })}
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="typeId"
+                    label="Task Type"
+                    rules={[{ required: true, message: 'Please select an Task Type' }]}
+                  >
+                    <Select placeholder="Please select an Task Type">
+                      {dataTaskType?.map((task: any, index: any) => {
+                        return <Option key={index} value={task.id}>{task.taskType}</Option>
+                      })}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item
+                    name="timeTrackingRemaining"
+                    label="Time Tracking"
+                    rules={[{ required: true, message: 'Please enter Time Tracking' }]}
+                  >
+                    <Slider defaultValue={30} value={Number(timeTracking.timeTrackingSpent)} max={Number(timeTracking.timeTrackingSpent) + Number(timeTracking.timeTrackingRemaining)} />
+                    <Row gutter={16} className='mb-2'>
+                      <Col span={12} className='text-left font-medium'>{timeTracking.timeTrackingSpent}h logged</Col>
+                      <Col span={12} className='text-right font-medium'>{timeTracking.timeTrackingRemaining}h remaining</Col>
+                    </Row>
+                  </Form.Item>
+                  <Row gutter={16} className='flex justify-around'>
+                    <Form.Item
+                      name="timeTrackingSpent"
+                      label="Hours spent"
+                      rules={[{ required: true, message: 'Please enter Hours spent' }]}
+                    >
+                      <Col span={24}>
+                        <Input type='number' defaultValue={0} min={0} placeholder="Hours spent" name='timeTrackingSpent'
+                          onChange={(e) => {
+                            setTimeTracking({
+                              ...timeTracking,
+                              timeTrackingSpent: Number(e.target.value),
+                            })
+                          }} />
+                      </Col>
+                    </Form.Item>
+                    <Form.Item
+                      name="originalEstimate"
+                      label="Total Estimated Hours"
+                      rules={[{ required: true, message: 'Please enter Total Estimated Hours' }]}
+                    >
+                      <Col span={24}>
+                        <Input type='number' defaultValue={0} min={0} placeholder="Total Estimated Hours" name='originalEstimate' onChange={(e) => {
+                          setTimeTracking({
+                            ...timeTracking,
+                            timeTrackingRemaining: Number(e.target.value),
+                          })
+                        }} />
+                      </Col>
+                    </Form.Item>
+                  </Row>
+                </Col>
+              </Row>
+
+
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item
+                    name="assigners"
+                    label="Assigners"
                     rules={[{ required: true, message: 'Please select an owner' }]}
                   >
-                    <Select placeholder="Please select an owner">
-                      <Option value="xiao">Xiaoxiao Fu</Option>
-                      <Option value="mao">Maomao Zhou</Option>
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    name="type"
-                    label="Type"
-                    rules={[{ required: true, message: 'Please choose the type' }]}
-                  >
-                    <Select placeholder="Please choose the type">
-                      <Option value="private">Private</Option>
-                      <Option value="public">Public</Option>
-                    </Select>
+                    <Space direction="vertical" style={{ width: '100%' }}>
+                      <Select
+                        mode="multiple"
+                        size={size}
+                        placeholder="Please select"
+                        onChange={handleChange}
+                        style={{ width: '100%' }}
+                        options={userOptions}
+                        optionFilterProp='label'
+                        ref={selectRef}
+                      />
+                    </Space>
                   </Form.Item>
                 </Col>
               </Row>
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item
-                    name="approver"
-                    label="Approver"
-                    rules={[{ required: true, message: 'Please choose the approver' }]}
-                  >
-                    <Select placeholder="Please choose the approver">
-                      <Option value="jack">Jack Ma</Option>
-                      <Option value="tom">Tom Liu</Option>
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    name="dateTime"
-                    label="DateTime"
-                    rules={[{ required: true, message: 'Please choose the dateTime' }]}
-                  >
-                    <DatePicker.RangePicker
-                      style={{ width: '100%' }}
-                      getPopupContainer={(trigger) => trigger.parentElement!}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
+
               <Row gutter={16}>
                 <Col span={24}>
                   <Form.Item
@@ -236,11 +385,38 @@ export default function Navbar() {
                     rules={[
                       {
                         required: true,
-                        message: 'please enter url description',
+                        message: 'please enter description',
                       },
                     ]}
                   >
-                    <Input.TextArea rows={4} placeholder="please enter url description" />
+                    <Editor
+                      init={{
+                        height: 500,
+                        menubar: false,
+                        plugins: [
+                          'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                          'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                          'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                        ],
+                        toolbar: 'undo redo | blocks | ' +
+                          'bold italic forecolor | alignleft aligncenter ' +
+                          'alignright alignjustify | bullist numlist outdent indent | ' +
+                          'removeformat | help',
+                      }}
+                      onEditorChange={handleEditorChange}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item className='flex flex-row-reverse mt-12'>
+                    <Space>
+                      <Button onClick={onClose} type="primary" htmlType="submit" className='bg-blue-500'>
+                        Create
+                      </Button>
+                      <Button onClick={onClose}>Cancel</Button>
+                    </Space>
                   </Form.Item>
                 </Col>
               </Row>
@@ -263,117 +439,6 @@ export default function Navbar() {
             <a rel="noopener noreferrer" href="#" onClick={showDrawer} style={{ textDecoration: 'none' }} className='text-blue-600 hover:text-blue-800'>
               Create Task
             </a>
-            <Drawer
-              title="Create Task"
-              width={720}
-              onClose={onClose}
-              open={open}
-              bodyStyle={{ paddingBottom: 80 }}
-              extra={
-                <Space style={{ position: 'absolute', top: '85%', right: '3%', }}>
-                  <Button onClick={onClose} type="primary" className='bg-blue-500'>
-                    Submit
-                  </Button>
-                  <Button onClick={onClose}>Cancel</Button>
-                </Space>
-              }
-            >
-              <Form layout="vertical" hideRequiredMark>
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Form.Item
-                      name="name"
-                      label="Name"
-                      rules={[{ required: true, message: 'Please enter user name' }]}
-                    >
-                      <Input placeholder="Please enter user name" />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      name="url"
-                      label="Url"
-                      rules={[{ required: true, message: 'Please enter url' }]}
-                    >
-                      <Input
-                        style={{ width: '100%' }}
-                        addonBefore="http://"
-                        addonAfter=".com"
-                        placeholder="Please enter url"
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Form.Item
-                      name="owner"
-                      label="Owner"
-                      rules={[{ required: true, message: 'Please select an owner' }]}
-                    >
-                      <Select placeholder="Please select an owner">
-                        <Option value="xiao">Xiaoxiao Fu</Option>
-                        <Option value="mao">Maomao Zhou</Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      name="type"
-                      label="Type"
-                      rules={[{ required: true, message: 'Please choose the type' }]}
-                    >
-                      <Select placeholder="Please choose the type">
-                        <Option value="private">Private</Option>
-                        <Option value="public">Public</Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Form.Item
-                      name="approver"
-                      label="Approver"
-                      rules={[{ required: true, message: 'Please choose the approver' }]}
-                    >
-                      <Select placeholder="Please choose the approver">
-                        <Option value="jack">Jack Ma</Option>
-                        <Option value="tom">Tom Liu</Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      name="dateTime"
-                      label="DateTime"
-                      rules={[{ required: true, message: 'Please choose the dateTime' }]}
-                    >
-                      <DatePicker.RangePicker
-                        style={{ width: '100%' }}
-                        getPopupContainer={(trigger) => trigger.parentElement!}
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row gutter={16}>
-                  <Col span={24}>
-                    <Form.Item
-                      name="description"
-                      label="Description"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'please enter url description',
-                        },
-                      ]}
-                    >
-                      <Input.TextArea rows={4} placeholder="please enter url description" />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </Form>
-            </Drawer>
           </button>
           <Dropdown className="lg:hidden ml-3" menu={{ items: items4 }} trigger={['click']}
             data-toggle="collapse"

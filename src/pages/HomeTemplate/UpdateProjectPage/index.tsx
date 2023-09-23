@@ -16,7 +16,6 @@ export default function UpdateProjectPage() {
   const navigate: any = useNavigate();
   const { data } = useSelector((state: any) => state.createProjectReducer);
   const { infoProject } = useSelector((state: any) => state.allProjectReducer);
-  console.log("🚀 ~ file: index.tsx:20 ~ UpdateProjectPage ~ infoProject:", infoProject)
 
 
   useEffect(() => {

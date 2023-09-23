@@ -1,6 +1,8 @@
 import * as ActionTypes from './constants';
 import api from '../../../../utils/api';
 import { Action, User, Result } from "./types";
+import Swal from 'sweetalert2';
+
 
 export const loginData = (user: any, navigate: any) => {
   return (dispatch: any) => {
@@ -15,6 +17,11 @@ export const loginData = (user: any, navigate: any) => {
       })
       .catch((error: any) => {
         dispatch(actLoginFail(error));
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Password or ID is wrong',
+        })
       })
   }
 }

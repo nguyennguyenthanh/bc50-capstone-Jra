@@ -11,7 +11,6 @@ export default function ProjectPage() {
   const dispatch: any = useDispatch();
   const navigate: any = useNavigate();
   const dataProject: any = useSelector((state: any) => state.allProjectReducer.data);
-  console.log("🚀 ~ file: index.tsx:14 ~ ProjectPage ~ dataProject:", dataProject)
   const { userSearch } = useSelector((state: any) => state.allUserReducer);
   const [valueUser, setValueUser] = useState('');
   const searchRef: any = useRef(null);
@@ -21,7 +20,7 @@ export default function ProjectPage() {
   }, []);
 
   const handleInfoUpdateProject = (id: any) => {
-    const project = dataProject?.find((project: any) => project.id === id);
+    const project = dataProject?.find((project: any) => project.id === id);    
     dispatch(actUpdateSelectProject(project));
     navigate("/update-project", { replace: true });
   }
@@ -73,7 +72,6 @@ export default function ProjectPage() {
       dataIndex: 'members',
       width: '15%',
       render: (text: any, record: any, index: any) => {
-        console.log("🚀 ~ file: index.tsx:75 ~ ProjectPage ~ record:", record)
         return <>
           {record.members?.slice(0, 2).map((item: any, index: number | string) => {
             return <Popover key={index} placement="bottom" title="Delete User In This Project" content={() => {
@@ -161,7 +159,7 @@ export default function ProjectPage() {
       return {
         key: index,
         id: item.id,
-        projectName: <NavLink to={'/board'} onClick={()=>{
+        projectName: <NavLink to={'/board'} style={{ textDecoration: 'none' }} onClick={() => {
           dispatch(fetchProjectDetail(item.id))
         }}>{item.projectName}</NavLink>,
         categoryName: item.categoryName,

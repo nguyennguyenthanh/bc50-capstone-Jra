@@ -46,10 +46,9 @@ export default function Board() {
   const { Search } = Input;
 
   const onSearch = (value: any) => {
-    console.log("🚀 ~ file: index.tsx:50 ~ onSearch ~ value:", value)
     dispatch(fetchAllUser(value))
   };
-  
+
   //TABLE
   interface DataType {
     key: React.Key;
@@ -130,13 +129,15 @@ export default function Board() {
   }
   const onChange = (pagination: any, filters: any, sorter: any, extra: any) => {
   };
+
   return (
     <div className='container'>
-      <h5 className='my-4'><NavLink to={'/'}>Projects</NavLink> / {infoBoardProject}</h5>
+      <h5 className='my-4'><NavLink to={'/'} style={{ textDecoration: 'none' }} className='transition-all delay-150'>Projects</NavLink> / {infoBoardProject}</h5>
       <div className='grid grid-cols-8 my-3'>
         <h3 className='col-span-2'>Board</h3>
         <h5 className='col-span-2 leading-10'>Add members</h5>
         <Button className='col-span-4 w-9 h-9 flex justify-center items-center mt-1 rounded-full pb-2' style={{ fontSize: '1.2rem' }} onClick={() => handleAddMembers()}>+</Button>
+
         <Modal
           forceRender
           title={<div className='flex'>
@@ -181,6 +182,7 @@ export default function Board() {
           </div>
         </Modal>
       </div>
+
       <div className="grid grid-cols-12" style={{ marginLeft: '-8px', marginRight: '-8px', rowGap: 0 }}>
         <div className="ant-col mb-4 ant-col-xs-24 ant-col-sm-12 ant-col-lg-6 col-span-3" style={{ paddingLeft: 8, paddingRight: 8 }}>
           <div className="bg-gray-100 w-full h-full p-2 rounded">

@@ -27,7 +27,7 @@ export default function CreateProjectPage() {
     setDesciption(content);
   }
   const renderSelect = () => {
-    return data && data.length ? data?.map((item: any, index: number | string) => <Select.Option key={index} value={item.id}>{item.projectCategoryName}</Select.Option>) : []
+    return data && data.length ? data?.map((item: any, index: number | string) => <Select.Option key={index} value={item.id}>{item.projectCategoryName}</Select.Option>) : [];
   }
 
   return (
