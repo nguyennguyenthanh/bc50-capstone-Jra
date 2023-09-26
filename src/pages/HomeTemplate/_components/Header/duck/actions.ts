@@ -2,6 +2,7 @@ import * as ActionTypes from './constants';
 import api from '../../../../../utils/api';
 import { Action, TaskType, Result, Priority, Status, AllTask, GetUserByPJ } from './types';
 import Swal from 'sweetalert2';
+import { fetchProjectDetail } from '../../../Board/duck/actions';
 
 export const fetchTaskType = () => {
   return (dispatch: any) => {
@@ -77,7 +78,7 @@ export const actCreateTask = (infoTask: any, navigate: any) => {
             showConfirmButton: false,
             timer: 1500
           })
-          navigate('/board', { replace: true });
+          dispatch(fetchProjectDetail(infoTask.projectId))
         }
       })
       .catch((error: any) => {

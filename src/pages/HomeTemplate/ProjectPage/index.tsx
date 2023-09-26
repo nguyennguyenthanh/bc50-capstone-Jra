@@ -160,9 +160,7 @@ export default function ProjectPage() {
       return {
         key: index,
         id: item.id,
-        projectName: <NavLink to={'/board'} style={{ textDecoration: 'none' }} onClick={() => {
-          dispatch(fetchProjectDetail(item.id))
-        }}>{item.projectName}</NavLink>,
+        projectName: <NavLink to={`/board/${item.id}`} style={{ textDecoration: 'none' }} >{item.projectName}</NavLink>,
         categoryName: item.categoryName,
         creator: item.creator.name,
         members: item.members,

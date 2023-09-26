@@ -1,7 +1,7 @@
 import * as ActionTypes from './constants';
 import api from '../../../../utils/api';
-import { Action, Board, Result } from './types';
-
+import { Action, Board, GetTaskDetail, Result } from './types';
+import Swal from 'sweetalert2';
 
 export const fetchProjectDetail = (id: any) => {
   return (dispatch: any) => {
@@ -19,7 +19,59 @@ export const fetchProjectDetail = (id: any) => {
   }
 }
 
+export const fetchTaskDetail = (id: any) => {
+  return (dispatch: any) => {
+    dispatch(actTaskDetailRequest());
+    api.get(`Project/getTaskDetail?taskId=${id}`)
+      .then((result: Result<GetTaskDetail>) => {
+        if (result.data.statusCode === 200) {
+          dispatch(actTaskDetailSuccess(result.data.content))
+        }
+      })
+      .catch((error: any) => {
+        dispatch(actTaskDetailFail(error));
+      })
+  }
+}
 
+export const deleteTask = (id: any, navigate: any) => {
+  return (dispatch: any) => {
+    dispatch(actDeleteTaskRequest());
+    api.delete(`Project/removeTask?taskId=${id}`)
+      .then((result: Result<GetTaskDetail>) => {
+        if (result.data.statusCode === 200) {
+          dispatch(actDeleteTaskSuccess(result.data.content))
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Delete Task Successfully',
+            showConfirmButton: false,
+            timer: 1500
+          })
+        }
+      })
+      .catch((error: any) => {
+        dispatch(actDeleteTaskFail(error));
+      })
+  }
+}
+
+export const updateStatusDragDrop = (taskUpdate: any) => {
+  return (dispatch: any) => {
+    dispatch(actUpdateStatusRequest());
+    api.put(`Project/updateStatus`, taskUpdate)
+      .then((result: Result<Board>) => {
+        if (result.data.statusCode === 200) {
+          dispatch(actUpdateStatusSuccess(result.data.content))
+        }
+      })
+      .catch((error: any) => {
+        dispatch(actUpdateStatusFail(error));
+      })
+  }
+}
+
+//Board
 const actBoardRequest = (): Action => ({ type: ActionTypes.BOARD_REQUEST })
 const actBoardSuccess = (data: Board[]): Action => ({
   type: ActionTypes.BOARD_SUCCESS,
@@ -27,5 +79,41 @@ const actBoardSuccess = (data: Board[]): Action => ({
 })
 const actBoardFail = (error: any) => ({
   type: ActionTypes.BOARD_FAIL,
+  payload: error
+})
+
+//Task Detail
+const actTaskDetailRequest = (): Action => ({ type: ActionTypes.TASK_DETAIL_REQUEST })
+const actTaskDetailSuccess = (dataTaskDetail: GetTaskDetail[]): Action => ({
+  type: ActionTypes.TASK_DETAIL_SUCCESS,
+  payload: dataTaskDetail
+})
+const actTaskDetailFail = (error: any) => ({
+  type: ActionTypes.TASK_DETAIL_FAIL,
+  payload: error
+})
+export const actTaskDetail = (infoTaskDetail: GetTaskDetail[]): Action => ({
+  type: ActionTypes.INFO_TASK_DETAIL,
+  payload: infoTaskDetail
+})
+
+//Delete Task
+const actDeleteTaskRequest = (): Action => ({ type: ActionTypes.DELETE_TASK_REQUEST })
+const actDeleteTaskSuccess = (dataTaskDetail: GetTaskDetail[]): Action => ({
+  type: ActionTypes.DELETE_TASK_SUCCESS,
+  payload: dataTaskDetail
+})
+const actDeleteTaskFail = (error: any) => ({
+  type: ActionTypes.DELETE_TASK_FAIL,
+  payload: error
+})
+//Update Status Drag Drop
+const actUpdateStatusRequest = (): Action => ({ type: ActionTypes.UPDATE_STATUS_REQUEST })
+const actUpdateStatusSuccess = (dataUpdateStatus: Board[]): Action => ({
+  type: ActionTypes.UPDATE_STATUS_SUCCESS,
+  payload: dataUpdateStatus
+})
+const actUpdateStatusFail = (error: any) => ({
+  type: ActionTypes.UPDATE_STATUS_FAIL,
   payload: error
 })

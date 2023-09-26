@@ -19,7 +19,7 @@ const routes = [
         element: lazy(() => import('../pages/HomeTemplate/UpdateProjectPage'))
       },
       {
-        path: 'board',
+        path: 'board/:id',
         element: lazy(() => import('../pages/HomeTemplate/Board'))
       },
       {

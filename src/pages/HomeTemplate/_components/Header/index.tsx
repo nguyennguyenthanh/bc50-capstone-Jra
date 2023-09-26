@@ -22,9 +22,7 @@ interface stateTimeTracking {
 
 export default function Navbar() {
   const [form] = Form.useForm<{
-    listUserAsign: [
-      number
-    ],
+    listUserAsign: [],
     taskName: string,
     description: string,
     statusId: string,
@@ -43,17 +41,15 @@ export default function Navbar() {
   });
   //Close select after choose
   const selectRef: any = useRef();
-  const handleChange = useCallback((value: any) => {
-    selectRef.current.blur() //whenever a user triggers value change, we call `blur()` on `Select`
-
-  }, [])
-
   const dispatch: any = useDispatch();
   const navigate: any = useNavigate();
   const dataProject: any = useSelector((state: any) => state.allProjectReducer.data);
   const dataTaskType: any = useSelector((state: any) => state.headerReducer.data);
   const { Priority, Status, infoTask, dataUserByProject } = useSelector((state: any) => state.headerReducer);
+  console.log("🚀 ~ file: index.tsx:49 ~ Navbar ~ infoTask:", infoTask)
+  console.log("🚀 ~ file: index.tsx:55 ~ Navbar ~ dataUserByProject:", dataUserByProject)
   const [description, setDesciption] = useState();
+  const [listUserAsign, setListUserAsign] = useState([]);
 
   const userOptions = dataUserByProject?.map((item: any, index: any) => {
     return { value: item.userId, label: item.name }
@@ -159,7 +155,10 @@ export default function Navbar() {
   }
 
   //SELECT
-
+  const handleChange = useCallback((value: any) => {
+    setListUserAsign(value)
+    selectRef.current.blur() //whenever a user triggers value change, we call `blur()` on `Select`
+  }, [])
 
   const handleSizeChange = (e: RadioChangeEvent) => {
     setSize(e.target.value);
@@ -168,20 +167,19 @@ export default function Navbar() {
   //SUBMIT FORM
   const onFinish = async (values: any) => {
     values.description = description;
-    values.assigners = infoTask?.listUserAsign;
+    values.listUserAsign = listUserAsign;
     values.originalEstimate = Number(values.originalEstimate);
     values.timeTrackingSpent = Number(values.timeTrackingSpent);
     await dispatch(actCreateTask(values, navigate));
     await dispatch(actInfoTask(values));
     await form.resetFields();
   };
+
   const handleEditorChange = (content: any, editor: any) => {
     setDesciption(content);
   }
   const initialValues = {
-    listUserAsign: [
-      0
-    ],
+    listUserAsign: [],
     taskName: '',
     description: '',
     statusId: Status?.statusId,
@@ -236,6 +234,7 @@ export default function Navbar() {
               layout="vertical"
               initialValues={initialValues}
               onFinish={onFinish}
+            // onChange={}
             >
               <Row gutter={16}>
                 <Col span={24}>
@@ -360,22 +359,20 @@ export default function Navbar() {
               <Row gutter={16}>
                 <Col span={24}>
                   <Form.Item
-                    name="assigners"
-                    label="Assigners"
-                    rules={[{ required: true, message: 'Please select an Assigners' }]}
+                    name="assigness"
+                    label="Assigness"
+                    rules={[{ required: true, message: 'Please select an Assigness' }]}
                   >
-                    <Space direction="vertical" style={{ width: '100%' }}>
-                      <Select
-                        mode="multiple"
-                        size={size}
-                        placeholder="Please select an Assigners"
-                        onChange={handleChange}
-                        style={{ width: '100%' }}
-                        options={userOptions}
-                        optionFilterProp='label'
-                        ref={selectRef}
-                      />
-                    </Space>
+                    <Select
+                      mode="multiple"
+                      size={size}
+                      placeholder="chose Assigness"
+                      onChange={handleChange}
+                      style={{ width: '100%' }}
+                      options={userOptions}
+                      optionFilterProp='label'
+                      ref={selectRef}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
@@ -415,6 +412,7 @@ export default function Navbar() {
                 <Col span={24}>
                   <Form.Item className='flex flex-row-reverse mt-12'>
                     <Space>
+
                       <Button onClick={onClose} type="primary" htmlType="submit" className='bg-blue-500'>
                         Create
                       </Button>

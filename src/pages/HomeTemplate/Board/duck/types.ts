@@ -1,7 +1,11 @@
 export interface BoardState<T> {
   loading: boolean;
   data: T[] | null | T;
-  error: any
+  dataTaskDetail: T[] | null | T;
+  dataDeleteTask: T[] | null | T;
+  dataUpdateStatus: T[] | null | T;
+  error: any;
+  infoTaskDetail: T[] | null | T | undefined;
 }
 
 export interface Action {
@@ -39,6 +43,39 @@ export interface Board {
   };
   alias: string;
 }
+
+export interface GetTaskDetail {
+  priorityTask: {
+    priorityId: number,
+    priority: string
+  },
+  taskTypeDetail: {
+    id: number,
+    taskType: string
+  },
+  assigness: [
+    {
+      id: number,
+      avatar: string,
+      name: string,
+      alias: string
+    }
+  ],
+  lstComment: [],
+  taskId: number,
+  taskName: string,
+  alias: string,
+  description: string,
+  statusId: string,
+  originalEstimate: number,
+  timeTrackingSpent: number,
+  timeTrackingRemaining: number,
+  typeId: number,
+  priorityId: number,
+  projectId: number
+}
+
+
 
 export interface Response<T> {
   statusCode: number;

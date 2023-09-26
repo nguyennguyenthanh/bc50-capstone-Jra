@@ -15,9 +15,7 @@ export interface Action {
 }
 
 export interface AllTask {
-  listUserAsign: [
-    number
-  ],
+  listUserAsign: [],
   taskName: string,
   description: string,
   statusId: string,
