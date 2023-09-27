@@ -1,15 +1,15 @@
 import React, { useEffect, useState, Fragment, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, Table, Input, Avatar, Modal, Dropdown, Space, Form, Select, Collapse, Slider } from 'antd';
-import { SearchOutlined, CloseSquareOutlined, FileDoneOutlined, WarningOutlined, DeleteOutlined, BugOutlined, AccountBookOutlined } from '@ant-design/icons';
+import { SearchOutlined, CloseSquareOutlined, DeleteOutlined, BugOutlined, AccountBookOutlined } from '@ant-design/icons';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { DeleteUser, fetchAllUser } from '../UserPage/duck/actions';
 import { assignUserProject, fetchAllProject } from '../ProjectPage/duck/actions';
 import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
 import { Editor } from '@tinymce/tinymce-react';
-import { actTaskDetail, deleteTask, fetchProjectDetail, fetchTaskDetail, updateStatusDragDrop } from './duck/actions';
-import { fetchStatus } from '../_components/Header/duck/actions';
+import { actTaskDetail, apiUpdateTask, assignUserTask, deleteTask, fetchProjectDetail, fetchTaskDetail, updateStatusDragDrop } from './duck/actions';
+import { fetchStatus, fetchTaskType } from '../_components/Header/duck/actions';
 import type { SizeType } from 'antd/es/config-provider/SizeContext';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
@@ -20,11 +20,41 @@ interface stateTimeTracking {
 }
 
 export default function Board() {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<{
+    priorityTask: {
+      priorityId: number,
+      priority: string
+    },
+    taskTypeDetail: {
+      id: number,
+      taskType: string
+    },
+    assigness: [
+      {
+        id: number,
+        avatar: string,
+        name: string,
+        alias: string
+      }
+    ],
+    lstComment: [],
+    taskId: number,
+    listUserAsign: [],
+    taskName: string,
+    description: string,
+    statusId: string,
+    originalEstimate: number,
+    timeTrackingSpent: number,
+    timeTrackingRemaining: number,
+    projectId: number,
+    typeId: number,
+    priorityId: number
+  }>();
   const dispatch: any = useDispatch();
   const dataBoard = useSelector((state: any) => state.boardReducer.data);
+  console.log("🚀 ~ file: index.tsx:26 ~ Board ~ dataBoard:", dataBoard)
   const { dataTaskDetail, infoTaskDetail } = useSelector((state: any) => state.boardReducer);
-  const dataTaskType: any = useSelector((state: any) => state.headerReducer.data);
+  console.log("🚀 ~ file: index.tsx:27 ~ Board ~ dataTaskDetail:", dataTaskDetail)
   const param = useParams();
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -33,6 +63,8 @@ export default function Board() {
   const strResultUser: string | null = localStorage.getItem('UserLogin');
   const dataUser = useSelector((user: any) => user.allUserReducer.data);
   const dataProject: any = useSelector((state: any) => state.allProjectReducer.data);
+  const dataTaskType: any = useSelector((state: any) => state.headerReducer.data);
+  console.log("🚀 ~ file: index.tsx:38 ~ dataTaskType:", dataTaskType)
   const { Priority, Status, dataUserByProject } = useSelector((state: any) => state.headerReducer);
   const [openTaskDetail, setOpenTaskDetail] = useState(false);
   const [confirmLoadingTaskDetail, setConfirmLoadingTaskDetail] = useState(false);
@@ -45,6 +77,8 @@ export default function Board() {
     timeTrackingRemaining: 0,
   });
   const navigate = useNavigate();
+  const [valueTask, setValueTask] = useState({});
+
 
   useEffect(() => {
     dispatch(fetchAllUser());
@@ -58,13 +92,14 @@ export default function Board() {
     form.setFieldsValue(infoTaskDetail);
   }, [infoTaskDetail])
   //SELECT
-  const handleChange = useCallback((value: any) => {
-    selectRef.current.blur() //whenever a user triggers value change, we call `blur()` on `Select`
-  }, [])
 
-  const userOptions = dataTaskDetail?.assigness.map((item: any, index: any) => {
+  const userOptions = dataBoard?.members.map((item: any, index: any) => {
     return { value: item.userId, label: item.name }
   })
+
+  const taskTypeOptions = dataBoard?.lstTask.map((item: any, index: any) => item.lstTaskDeTail.map((item: any) => {
+    return { value: item.taskTypeDetail.id, label: item.taskTypeDetail.taskType }
+  }))
 
   //MODAL ADD MEMBERS
   const showModal = () => {
@@ -192,9 +227,8 @@ export default function Board() {
               key={index}
               className="ant-col mb-4 ant-col-xs-24 ant-col-sm-12 ant-col-lg-6 col-span-3"
               style={{ paddingLeft: 8, paddingRight: 8 }}>
-              <div
-                className="bg-gray-100 w-full h-full p-2 rounded">
-                <span className="inline-block px-2 py-0.5 mb-1 text-xs font-semibold rounded bg-gray-200">{taskListDetail.statusName}</span>
+              <div className="bg-gray-100 w-full h-full p-2 rounded">
+                <span className="inline-block px-2 py-0.5 mb-1 text-xs font-semibold rounded bg-gray-200" >{taskListDetail.statusName}</span>
                 <div className="flex-grow">
                   {taskListDetail.statusId === '1' ? <button className="h-8 hover:bg-gray-300 focus:bg-gray-300 w-full text-left font-medium mt-1 py-1 px-1 rounded duration-300">
                     <span role="img" aria-label="plus" className="anticon anticon-plus mr-1 text-xl">+</span>
@@ -221,7 +255,7 @@ export default function Board() {
                             <div className="ant-col ant-col-24">
                               <div className="mb-2">{task.taskName}</div>
                               <div className="flex justify-start items-center">
-                                <span className='mr-2'>{task.taskTypeDetail.taskType === 'bug' ? <WarningOutlined title='Bug' /> : <FileDoneOutlined title='Task' />}</span>
+                                <span className='mr-2'>{task.taskTypeDetail.taskType === 'bug' ? <BugOutlined className='text-red-600' title='Bug' /> : <AccountBookOutlined className='text-blue-500' title='Task' />}</span>
                                 <span className="text-xs rounded px-1 pb-0.5 text-red-700 border border-red-700">{task.priorityTask.priority}</span>
                                 <div className="h-full w-full flex justify-end items-end">
                                   <div className="ant-avatar-group">
@@ -248,9 +282,7 @@ export default function Board() {
     </DragDropContext>
   }
   const renderMembers = () => {
-    return dataBoard?.members.map((mem: any, index: any) => {
-      return <Avatar key={index} src={mem.avatar} className='w-9 h-9' />
-    })
+    return dataBoard?.members.slice(0, 3).map((mem: any, index: any) => <Avatar key={index} src={mem.avatar} className='w-9 h-9' />)
   }
   //MODAL TASK DETAIL
   const showModalTaskDetail = () => {
@@ -267,16 +299,16 @@ export default function Board() {
     // setDesciption(content);
   }
 
-  const items: MenuProps['items'] = [
-    {
-      label: <a href="#" style={{ textDecoration: 'none' }}><BugOutlined className='text-lime-600' /> Bug</a>,
-      key: '0',
-    },
-    {
-      label: <a href="#" style={{ textDecoration: 'none' }}><AccountBookOutlined className='text-blue-600' /> New Task</a>,
-      key: '1',
-    },
-  ];
+  // const items: MenuProps['items'] = [
+  //   {
+  //     label: <a href="#" style={{ textDecoration: 'none' }}><BugOutlined className='text-red-600' /> bug</a>,
+  //     key: '0',
+  //   },
+  //   {
+  //     label: <a href="#" style={{ textDecoration: 'none' }}><AccountBookOutlined className='text-blue-600' /> new task</a>,
+  //     key: '1',
+  //   },
+  // ];
 
   const initialValues = {
     priorityTask: {
@@ -304,9 +336,9 @@ export default function Board() {
     originalEstimate: 0,
     timeTrackingSpent: 0,
     timeTrackingRemaining: 0,
-    typeId: 0,
-    priorityId: 0,
-    projectId: 0
+    typeId: dataTaskType?.id,
+    priorityId: Priority?.priorityId,
+    projectId: dataProject?.id
   }
   return (
     <div className='container'>
@@ -314,7 +346,10 @@ export default function Board() {
       <div className='grid grid-cols-8 my-3'>
         <h3 className='col-span-2'>Board</h3>
         <h5 className='col-span-1 leading-10'>Add members</h5>
-        <div className='col-span-1 flex items-center'>{renderMembers()}</div>
+        <div className='col-span-1 flex items-center'>
+          {renderMembers()}
+          {dataBoard?.members.length > 3 ? <Avatar className='ring-2 ring-white'>...</Avatar> : ''}
+        </div>
         <Button className='col-span-4 w-9 h-9 flex justify-center items-center mt-1 rounded-full pb-2' style={{ fontSize: '1.2rem' }} onClick={() => handleAddMembers()}>+</Button>
 
         <Modal
@@ -362,7 +397,7 @@ export default function Board() {
         </Modal>
       </div>
 
-      <div className="grid grid-cols-12" style={{ marginLeft: '-8px', marginRight: '-8px', rowGap: 0 }}>
+      <div className="ant-row grid grid-cols-12" style={{ marginLeft: '-8px', marginRight: '-8px', rowGap: 0 }}>
         {renderCardTaskList()}
       </div>
       <Modal
@@ -393,14 +428,19 @@ export default function Board() {
         >
           <div className='col-span-6'>
             <Form.Item
-              name={['taskTypeDetail', 'taskType']}
-              rules={[{ required: true, message: 'Please enter Task name' }]}
+              name={'typeId'}
+              rules={[{ required: true, message: 'Please enter Task Type' }]}
             >
-              <Dropdown menu={{ items }} trigger={['click']}>
-                <Space className='flex justify-between'>
-                  {dataTaskDetail?.taskTypeDetail.taskType}
-                </Space>
-              </Dropdown>
+              <Select className='flex font-medium'>
+                {/* {dataTaskDetail?.taskTypeDetail.taskType === 'bug' ? <BugOutlined className='text-lg text-red-600' title='Bug' /> : <AccountBookOutlined className='text-lg text-blue-500' title='New Task' />}
+                {dataTaskDetail?.taskTypeDetail.taskType} */}
+                {dataTaskType?.map((taskType: any, index: any) => {
+                  return <Option key={index} value={taskType.id}>
+                    {taskType.taskType === 'bug' ? <BugOutlined className='text-lg text-red-600' title='Bug' /> : <AccountBookOutlined className='text-lg text-blue-500' title='New Task' />}
+                    {taskType.taskType}
+                  </Option>
+                })}
+              </Select>
             </Form.Item>
             <Form.Item
               name="taskName"
@@ -486,11 +526,30 @@ export default function Board() {
                         mode="multiple"
                         size={size}
                         placeholder="chose Assigness"
-                        onChange={handleChange}
+                        onChange={(value: any) => {
+                          setValueTask(value);
+                        }}
                         style={{ width: '85%' }}
                         options={userOptions}
                         optionFilterProp='label'
-                        ref={selectRef}
+                        value={dataTaskDetail?.assigness.map((item: any, index: any) => {
+                          return { value: item.userId, label: item.name }
+                        })}
+                        onSelect={async (value: any, options: any) => {
+                          console.log("🚀 ~ file: index.tsx:514 ~ value:", value)
+                          let dataUpdateAssignessTask = dataBoard?.members.find((item: any, index: any) => item.userId === value);
+                          console.log("🚀 ~ file: index.tsx:516 ~ onSelect={ ~ dataUpdateAssignessTask:", dataUpdateAssignessTask)
+                          dataUpdateAssignessTask = { ...dataTaskDetail, assigness: dataTaskDetail?.push(dataUpdateAssignessTask) }
+                          console.log("🚀 ~ file: index.tsx:518 ~ dataUpdateAssignessTask:", dataUpdateAssignessTask)
+                          // const dataAddMemberTask = {
+                          //   taskId: Number(dataTaskDetail?.taskId),
+                          //   userId: Number(value),
+                          // }
+                          // console.log("🚀 ~ file: index.tsx:521 ~ dataAddMemberTask:", dataAddMemberTask)
+                          await setValueTask(options.label)
+                          // await dispatch(assignUserTask(dataAddMemberTask));
+                          // await dispatch(apiUpdateTask(newAssignessTask))
+                        }}
                       />
                     </div>
                   </Form.Item>
@@ -498,7 +557,7 @@ export default function Board() {
                     <div className='grid grid-cols-12 gap-4 container'>
                       <span className='font-medium col-span-4 flex items-center' style={{ fontSize: '0.9rem' }}>Priority</span>
                       <Select
-                        // value={infoTaskDetail?.priorityTask.priorityId}
+                        value={{ value: dataTaskDetail?.priorityTask.priorityId, label: dataTaskDetail?.priorityTask.priority }}
                         className='col-span-8'
                         placeholder="chose Priority"
                         style={{ width: '85%' }}

@@ -1,11 +1,10 @@
 import { useEffect, Fragment, useState, useRef } from 'react';
-import { Button, Table, Input, Avatar, Popover, AutoComplete } from 'antd';
+import { Button, Table, Input, Avatar, Popover, AutoComplete, Breakpoint } from 'antd';
 import { DeleteOutlined, EditOutlined, SearchOutlined, CloseSquareOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { DeleteProject, actUpdateSelectProject, assignUserProject, fetchAllProject } from './duck/actions';
 import { DeleteUser, getApiUser } from '../UserPage/duck/actions';
-import { fetchProjectDetail } from '../Board/duck/actions';
 
 
 export default function ProjectPage() {
@@ -27,7 +26,7 @@ export default function ProjectPage() {
   }
 
   //Table Antd
-  const columns = [
+  const columns: any[] = [
     {
       title: 'Id',
       dataIndex: 'id',
@@ -35,6 +34,7 @@ export default function ProjectPage() {
         return a.id - b.id;
       },
       width: '15%',
+      responsive: ['sm'],
     },
     {
       title: 'Project name',
@@ -66,7 +66,6 @@ export default function ProjectPage() {
         return 1;
       },
       width: '20%',
-
     },
     {
       title: 'Members',

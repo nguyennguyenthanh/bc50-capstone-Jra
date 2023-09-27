@@ -1,8 +1,8 @@
-import React, { useEffect, Fragment, useState, useRef } from 'react';
-import { Button, Table, Input, Modal, Form, Space } from 'antd';
+import { useEffect, Fragment, useState } from 'react';
+import { Button, Table, Input, Modal, Form } from 'antd';
 import { DeleteOutlined, EditOutlined, SearchOutlined, LockOutlined, UserOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { DeleteUser, UpdateUser, actUpdateSelectUser, fetchAllUser } from './duck/actions';
 
 
@@ -35,7 +35,6 @@ export default function UserPage() {
 
   const handleInfoUpdateUser = (userId: any) => {
     const user: any = dataUser?.find((user: any) => user.userId === userId);
-    console.log("user", user);
     dispatch(actUpdateSelectUser(user));
     showModal();
   }
@@ -119,7 +118,7 @@ export default function UserPage() {
       }
 
     }) : [];
-    return <Table columns={columns} dataSource={data} onChange={onChange} />
+    return <Table columns={columns} dataSource={data} onChange={onChange} className='table-auto' />
   }
 
   const onChange = (pagination: any, filters: any, sorter: any, extra: any) => {

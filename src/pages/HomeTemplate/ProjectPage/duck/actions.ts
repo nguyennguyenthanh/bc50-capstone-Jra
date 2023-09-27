@@ -114,9 +114,9 @@ const actDeleteProjectFail = (error: any) => ({
 
 //DELETE PJ
 const actassignUserProjectRequest = (): Action => ({ type: ActionTypes.ASSIGN_USER_REQUEST });
-const actassignUserProjectSuccess = (dataAssign: AllProjects[]): Action => ({
+const actassignUserProjectSuccess = (userProject: AllProjects[]): Action => ({
   type: ActionTypes.ASSIGN_USER_SUCCESS,
-  payload: dataAssign
+  payload: userProject
 });
 const actassignUserProjectFail = (error: any) => ({
   type: ActionTypes.ASSIGN_USER_FAIL,

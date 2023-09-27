@@ -1,6 +1,6 @@
 import * as ActionTypes from './constants';
 import api from '../../../../utils/api';
-import { Action, Board, GetTaskDetail, Result } from './types';
+import { Action, Board, GetTaskDetail, Result, UpdateTask } from './types';
 import Swal from 'sweetalert2';
 
 export const fetchProjectDetail = (id: any) => {
@@ -71,6 +71,33 @@ export const updateStatusDragDrop = (taskUpdate: any) => {
   }
 }
 
+export const assignUserTask = (userTask: any) => {
+  return (dispatch: any) => {
+    dispatch(actAddUserTaskRequest());
+    api.post("Project/assignUserTask", userTask)
+      .then((result: Result<GetTaskDetail>) => {
+        dispatch(actAddUserTaskSuccess(result.data.content));
+      })
+      .catch((error) => {
+        dispatch(actAddUserTaskFail(error));
+      })
+  }
+}
+
+export const apiUpdateTask = (task: any) => {
+  return (dispatch: any) => {
+    dispatch(actUpdateTaskRequest());
+    api.post("Project/updateTask", task)
+      .then((result: Result<UpdateTask>) => {
+        dispatch(actUpdateTaskSuccess(result.data.content));
+      })
+      .catch((error) => {
+        dispatch(actUpdateTaskFail(error));
+      })
+  }
+}
+
+
 //Board
 const actBoardRequest = (): Action => ({ type: ActionTypes.BOARD_REQUEST })
 const actBoardSuccess = (data: Board[]): Action => ({
@@ -114,6 +141,26 @@ const actUpdateStatusSuccess = (dataUpdateStatus: Board[]): Action => ({
   payload: dataUpdateStatus
 })
 const actUpdateStatusFail = (error: any) => ({
+  type: ActionTypes.UPDATE_STATUS_FAIL,
+  payload: error
+})
+//Add User Task
+const actAddUserTaskRequest = (): Action => ({ type: ActionTypes.ADD_USER_TASK_REQUEST })
+const actAddUserTaskSuccess = (userTask: GetTaskDetail[]): Action => ({
+  type: ActionTypes.ADD_USER_TASK_SUCCESS,
+  payload: userTask
+})
+const actAddUserTaskFail = (error: any) => ({
+  type: ActionTypes.ADD_USER_TASK_FAIL,
+  payload: error
+})
+//Update Status Drag Drop
+const actUpdateTaskRequest = (): Action => ({ type: ActionTypes.UPDATE_STATUS_REQUEST })
+const actUpdateTaskSuccess = (dataUpdateTask: UpdateTask[]): Action => ({
+  type: ActionTypes.UPDATE_STATUS_SUCCESS,
+  payload: dataUpdateTask
+})
+const actUpdateTaskFail = (error: any) => ({
   type: ActionTypes.UPDATE_STATUS_FAIL,
   payload: error
 })

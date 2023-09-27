@@ -4,8 +4,10 @@ export interface BoardState<T> {
   dataTaskDetail: T[] | null | T;
   dataDeleteTask: T[] | null | T;
   dataUpdateStatus: T[] | null | T;
+  dataUpdateTask: T[] | null | T;
   error: any;
   infoTaskDetail: T[] | null | T | undefined;
+  userTask: T[] | null | T | undefined;
 }
 
 export interface Action {
@@ -75,6 +77,19 @@ export interface GetTaskDetail {
   projectId: number
 }
 
+export interface UpdateTask {
+  listUserAsign: [],
+  taskId: string,
+  taskName: string,
+  description: string,
+  statusId: string,
+  originalEstimate: number,
+  timeTrackingSpent: number,
+  timeTrackingRemaining: number,
+  projectId: number,
+  typeId: number,
+  priorityId: number
+}
 
 
 export interface Response<T> {

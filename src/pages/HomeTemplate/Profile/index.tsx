@@ -2,8 +2,8 @@ import { LockOutlined, MailOutlined, UserOutlined, PhoneOutlined } from '@ant-de
 import { Button, Form, Input, Space } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { Fragment, useEffect, useState } from 'react';
-import { actGetProfileUser, actProfileUser, fetchProfileUser } from './duck/actions';
+import { Fragment } from 'react';
+import { actGetProfileUser } from './duck/actions';
 
 
 
@@ -14,7 +14,6 @@ const ProfilePage: React.FC = () => {
   const { profileUser } = useSelector((state: any) => state.profileUserReducer);
 
   const onFinish = (values: any) => {
-    console.log("🚀 ~ file: index.tsx:21 ~ onFinish ~ values:", values)
     dispatch(actGetProfileUser(values, navigate));
   };
 

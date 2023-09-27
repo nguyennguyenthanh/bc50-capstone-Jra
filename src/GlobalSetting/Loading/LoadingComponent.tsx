@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import styleLoading from './Loading.module.css';
-import Loading from './../../assets/images/loading.gif';
+import Loading from './../../assets/images/Loading.gif';
 
 export default class LoadingComponent extends Component {
   render() {

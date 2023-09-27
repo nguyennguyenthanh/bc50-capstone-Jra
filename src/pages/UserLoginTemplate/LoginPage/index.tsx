@@ -1,14 +1,13 @@
 import { LockOutlined, MailOutlined, FacebookOutlined, TwitterOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { useDispatch } from 'react-redux';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { loginData } from './duck/actions';
 
 const LoginPage: React.FC = () => {
   const dispatch: any = useDispatch();
   const navigate: any = useNavigate();
   const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
     dispatch(loginData(values, navigate));
   };
 

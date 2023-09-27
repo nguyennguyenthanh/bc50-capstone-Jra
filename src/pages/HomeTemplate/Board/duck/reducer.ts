@@ -8,8 +8,10 @@ const boardState: BoardState<Board | GetTaskDetail> = {
   dataTaskDetail: null,
   dataDeleteTask: null,
   dataUpdateStatus: null,
+  dataUpdateTask: null,
   error: null,
   infoTaskDetail: undefined,
+  userTask: undefined,
 }
 
 const boardReducer = (state = boardState, action: Action) => {
@@ -90,6 +92,44 @@ const boardReducer = (state = boardState, action: Action) => {
     case ActionTypes.UPDATE_STATUS_FAIL: {
       state.loading = false;
       state.dataUpdateStatus = null;
+      state.error = action.payload;
+      return { ...state }
+    }
+    //Add member task 
+    case ActionTypes.ADD_USER_TASK_REQUEST: {
+      state.loading = true;
+      state.userTask = null;
+      state.error = null;
+      return { ...state }
+    }
+    case ActionTypes.ADD_USER_TASK_SUCCESS: {
+      state.loading = false;
+      state.userTask = action.payload;
+      state.error = null;
+      return { ...state }
+    }
+    case ActionTypes.ADD_USER_TASK_FAIL: {
+      state.loading = false;
+      state.userTask = null;
+      state.error = action.payload;
+      return { ...state }
+    }
+    //Update Task Modal
+    case ActionTypes.UPDATE_TASK_REQUEST: {
+      state.loading = true;
+      state.dataUpdateTask = null;
+      state.error = null;
+      return { ...state }
+    }
+    case ActionTypes.UPDATE_TASK_SUCCESS: {
+      state.loading = false;
+      state.dataUpdateTask = action.payload;
+      state.error = null;
+      return { ...state }
+    }
+    case ActionTypes.UPDATE_TASK_FAIL: {
+      state.loading = false;
+      state.dataUpdateTask = null;
       state.error = action.payload;
       return { ...state }
     }

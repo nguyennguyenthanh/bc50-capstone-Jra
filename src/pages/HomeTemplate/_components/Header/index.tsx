@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { DownOutlined, UserOutlined, LogoutOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Dropdown, Space, Button, Col, Drawer, Form, Input, Row, Select, RadioChangeEvent, Slider } from 'antd';
@@ -45,9 +45,7 @@ export default function Navbar() {
   const navigate: any = useNavigate();
   const dataProject: any = useSelector((state: any) => state.allProjectReducer.data);
   const dataTaskType: any = useSelector((state: any) => state.headerReducer.data);
-  const { Priority, Status, infoTask, dataUserByProject } = useSelector((state: any) => state.headerReducer);
-  console.log("🚀 ~ file: index.tsx:49 ~ Navbar ~ infoTask:", infoTask)
-  console.log("🚀 ~ file: index.tsx:55 ~ Navbar ~ dataUserByProject:", dataUserByProject)
+  const { Priority, Status, dataUserByProject } = useSelector((state: any) => state.headerReducer);
   const [description, setDesciption] = useState();
   const [listUserAsign, setListUserAsign] = useState([]);
 
@@ -119,16 +117,15 @@ export default function Navbar() {
       ],
     },
     {
-      label: <a href="#">Users</a>,
+      label: <a href="#" style={{ textDecoration: 'none' }}>Users</a>,
       key: '1',
       children: [
         {
           key: '1-1',
-          label: <a href="#">View all users</a>,
+          label: <NavLink to={'/user'} className='hover:font-medium transition-all delay-500' style={{ textDecoration: 'none' }}>View all users</NavLink>,
         },
       ],
     },
-
   ];
   //Drawer
 
@@ -234,7 +231,6 @@ export default function Navbar() {
               layout="vertical"
               initialValues={initialValues}
               onFinish={onFinish}
-            // onChange={}
             >
               <Row gutter={16}>
                 <Col span={24}>
@@ -436,19 +432,36 @@ export default function Navbar() {
           </Dropdown>)}
         </div>
         <div className='flex'>
-          <button className="lg:hidden rounded-lg items-center h-12 px-1 mt-2 border-b-2 dark:border-transparent dark:text-violet-400 dark:border-violet-400 hover:bg-blue-400 hover:rounded-lg transition-all delay-150 font-medium">
+          <button
+            className="lg:hidden rounded-lg items-center h-12 ml-1 mt-2 border-b-2 dark:border-transparent dark:text-violet-400 dark:border-violet-400 hover:bg-blue-400 hover:rounded-lg transition-all delay-150 font-medium"
+            style={{ position: 'relative', left: '1.3rem' }}
+          >
             <a rel="noopener noreferrer" href="#" onClick={showDrawer} style={{ textDecoration: 'none' }} className='text-blue-600 hover:text-blue-800'>
               Create Task
             </a>
           </button>
-          <Dropdown className="lg:hidden ml-3" menu={{ items: items4 }} trigger={['click']}
+          <div className="lg:hidden" style={{ position: 'relative', left: '1.5rem', bottom: '0.3rem' }}>
+            <div className='grid grid-cols-8'>
+              {isValid && (<NavLink to={'/user-login/auth'} className="col-span-6 text-center self-center px-1 py-1 rounded-lg border-b-2 dark:border-transparent dark:text-violet-400 dark:border-violet-400 text-blue-600 hover:bg-blue-400 hover:text-blue-800 hover:rounded-lg transition-all delay-150 font-medium" style={{ textDecoration: 'none' }}>Sign in</NavLink>)}
+              {isValid && (<NavLink to={'/register'} className="col-span-6 text-center self-center px-1 py-1 mt-2 rounded-lg border-b-2 dark:border-transparent dark:text-violet-400 dark:border-violet-400 text-blue-600 hover:bg-blue-400 hover:text-blue-800 hover:rounded-lg transition-all delay-150 font-medium" style={{ textDecoration: 'none' }}>Sign up</NavLink>)}
+            </div>
+            {!isValid && (<Dropdown menu={{ items: items3 }} trigger={['click']} className='font-medium text-base mb-2 text-center mt-3 mr-2'>
+              <Space>
+                <a href='#' onClick={() => handleProfileUser()} style={{ textDecoration: "none" }} className='text-blue-600 hover:text-blue-800'>
+                  <UserOutlined className='' />{'Hello ' + name}
+                </a>
+              </Space>
+            </Dropdown>)}
+          </div>
+          <Dropdown className="lg:hidden" menu={{ items: items4 }} trigger={['click']}
             data-toggle="collapse"
-            data-target="#collapsibleNavbar">
-            <MenuFoldOutlined className='text-4xl' />
+            data-target="#collapsibleNavbar"
+          >
+            <MenuFoldOutlined className='text-4xl' style={{ position: 'relative', left: '1rem' }} />
           </Dropdown>
         </div>
       </div>
-    </header>
+    </header >
 
   )
 }
