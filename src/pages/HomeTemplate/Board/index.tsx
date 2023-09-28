@@ -64,7 +64,6 @@ export default function Board() {
   const dataUser = useSelector((user: any) => user.allUserReducer.data);
   const dataProject: any = useSelector((state: any) => state.allProjectReducer.data);
   const dataTaskType: any = useSelector((state: any) => state.headerReducer.data);
-  console.log("🚀 ~ file: index.tsx:38 ~ dataTaskType:", dataTaskType)
   const { Priority, Status, dataUserByProject } = useSelector((state: any) => state.headerReducer);
   const [openTaskDetail, setOpenTaskDetail] = useState(false);
   const [confirmLoadingTaskDetail, setConfirmLoadingTaskDetail] = useState(false);
@@ -77,8 +76,8 @@ export default function Board() {
     timeTrackingRemaining: 0,
   });
   const navigate = useNavigate();
-  const [valueTask, setValueTask] = useState({});
-
+  const [valueTask, setValueTask] = useState([]);
+  console.log("🚀 ~ file: index.tsx:80 ~ Board ~ valueTask:", valueTask)
 
   useEffect(() => {
     dispatch(fetchAllUser());
@@ -88,18 +87,21 @@ export default function Board() {
   }, [])
 
   useEffect(() => {
-    console.log('infoTaskDetail: ', infoTaskDetail);
+    if (dataTaskDetail?.assigness) {
+      setValueTask(dataTaskDetail?.assigness.map((task: any) => task.name));
+    }
     form.setFieldsValue(infoTaskDetail);
-  }, [infoTaskDetail])
+  }, [infoTaskDetail, dataTaskDetail])
+
   //SELECT
 
   const userOptions = dataBoard?.members.map((item: any, index: any) => {
     return { value: item.userId, label: item.name }
   })
-
-  const taskTypeOptions = dataBoard?.lstTask.map((item: any, index: any) => item.lstTaskDeTail.map((item: any) => {
-    return { value: item.taskTypeDetail.id, label: item.taskTypeDetail.taskType }
-  }))
+  const taskTypeOptions = dataTaskType?.map((item: any) => {
+    return { value: item.id, label: item.taskType }
+  })
+  console.log("🚀 ~ file: index.tsx:106 ~ Board ~ taskTypeOptions:", taskTypeOptions)
 
   //MODAL ADD MEMBERS
   const showModal = () => {
@@ -336,9 +338,9 @@ export default function Board() {
     originalEstimate: 0,
     timeTrackingSpent: 0,
     timeTrackingRemaining: 0,
-    typeId: dataTaskType?.id,
-    priorityId: Priority?.priorityId,
-    projectId: dataProject?.id
+    typeId: 0,
+    priorityId: 0,
+    projectId: 0
   }
   return (
     <div className='container'>
@@ -431,9 +433,17 @@ export default function Board() {
               name={'typeId'}
               rules={[{ required: true, message: 'Please enter Task Type' }]}
             >
-              <Select className='flex font-medium'>
-                {/* {dataTaskDetail?.taskTypeDetail.taskType === 'bug' ? <BugOutlined className='text-lg text-red-600' title='Bug' /> : <AccountBookOutlined className='text-lg text-blue-500' title='New Task' />}
-                {dataTaskDetail?.taskTypeDetail.taskType} */}
+              <Select
+                onChange={async (value: any) => {
+                  setValueTask(value);
+                  await dispatch(apiUpdateTask({ ...dataTaskDetail, typeId: value }))
+                }}
+                style={{ width: '30%' }}
+                // options={taskTypeOptions}
+                optionFilterProp='label'
+                // value={valueTask}
+                className='flex font-medium'
+              >
                 {dataTaskType?.map((taskType: any, index: any) => {
                   return <Option key={index} value={taskType.id}>
                     {taskType.taskType === 'bug' ? <BugOutlined className='text-lg text-red-600' title='Bug' /> : <AccountBookOutlined className='text-lg text-blue-500' title='New Task' />}
@@ -526,30 +536,14 @@ export default function Board() {
                         mode="multiple"
                         size={size}
                         placeholder="chose Assigness"
-                        onChange={(value: any) => {
+                        onChange={async (value: any) => {
                           setValueTask(value);
+                          await dispatch(apiUpdateTask({ ...dataTaskDetail, listUserAsign: value }))
                         }}
                         style={{ width: '85%' }}
                         options={userOptions}
                         optionFilterProp='label'
-                        value={dataTaskDetail?.assigness.map((item: any, index: any) => {
-                          return { value: item.userId, label: item.name }
-                        })}
-                        onSelect={async (value: any, options: any) => {
-                          console.log("🚀 ~ file: index.tsx:514 ~ value:", value)
-                          let dataUpdateAssignessTask = dataBoard?.members.find((item: any, index: any) => item.userId === value);
-                          console.log("🚀 ~ file: index.tsx:516 ~ onSelect={ ~ dataUpdateAssignessTask:", dataUpdateAssignessTask)
-                          dataUpdateAssignessTask = { ...dataTaskDetail, assigness: dataTaskDetail?.push(dataUpdateAssignessTask) }
-                          console.log("🚀 ~ file: index.tsx:518 ~ dataUpdateAssignessTask:", dataUpdateAssignessTask)
-                          // const dataAddMemberTask = {
-                          //   taskId: Number(dataTaskDetail?.taskId),
-                          //   userId: Number(value),
-                          // }
-                          // console.log("🚀 ~ file: index.tsx:521 ~ dataAddMemberTask:", dataAddMemberTask)
-                          await setValueTask(options.label)
-                          // await dispatch(assignUserTask(dataAddMemberTask));
-                          // await dispatch(apiUpdateTask(newAssignessTask))
-                        }}
+                        value={valueTask}
                       />
                     </div>
                   </Form.Item>
