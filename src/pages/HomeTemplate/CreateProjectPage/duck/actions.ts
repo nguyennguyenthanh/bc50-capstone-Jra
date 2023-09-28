@@ -15,6 +15,7 @@ export const fetchProjectCategory = () => {
       })
   }
 }
+
 export const actCreateProject = (project: any, navigate: any) => {
   return (dispatch: any) => {
     dispatch(actCreateProjectRequest());
