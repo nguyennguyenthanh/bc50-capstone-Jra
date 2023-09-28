@@ -1,15 +1,14 @@
-import React, { useEffect, useState, Fragment, useCallback, useRef } from 'react'
+import React, { useEffect, useState, Fragment, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Button, Table, Input, Avatar, Modal, Dropdown, Space, Form, Select, Collapse, Slider } from 'antd';
+import { Button, Table, Input, Avatar, Modal, Form, Select, Collapse, Slider } from 'antd';
 import { SearchOutlined, CloseSquareOutlined, DeleteOutlined, BugOutlined, AccountBookOutlined } from '@ant-design/icons';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { DeleteUser, fetchAllUser } from '../UserPage/duck/actions';
 import { assignUserProject, fetchAllProject } from '../ProjectPage/duck/actions';
 import type { ColumnsType } from 'antd/es/table';
-import type { MenuProps } from 'antd';
 import { Editor } from '@tinymce/tinymce-react';
-import { actTaskDetail, apiUpdateTask, assignUserTask, deleteTask, fetchProjectDetail, fetchTaskDetail, updateStatusDragDrop } from './duck/actions';
-import { fetchStatus, fetchTaskType } from '../_components/Header/duck/actions';
+import { actTaskDetail, apiUpdateTask, deleteTask, fetchProjectDetail, fetchTaskDetail, updateStatusDragDrop } from './duck/actions';
+import { fetchStatus } from '../_components/Header/duck/actions';
 import type { SizeType } from 'antd/es/config-provider/SizeContext';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
@@ -52,9 +51,7 @@ export default function Board() {
   }>();
   const dispatch: any = useDispatch();
   const dataBoard = useSelector((state: any) => state.boardReducer.data);
-  console.log("🚀 ~ file: index.tsx:26 ~ Board ~ dataBoard:", dataBoard)
   const { dataTaskDetail, infoTaskDetail } = useSelector((state: any) => state.boardReducer);
-  console.log("🚀 ~ file: index.tsx:27 ~ Board ~ dataTaskDetail:", dataTaskDetail)
   const param = useParams();
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -77,7 +74,6 @@ export default function Board() {
   });
   const navigate = useNavigate();
   const [valueTask, setValueTask] = useState([]);
-  console.log("🚀 ~ file: index.tsx:80 ~ Board ~ valueTask:", valueTask)
 
   useEffect(() => {
     dispatch(fetchAllUser());
@@ -101,7 +97,6 @@ export default function Board() {
   const taskTypeOptions = dataTaskType?.map((item: any) => {
     return { value: item.id, label: item.taskType }
   })
-  console.log("🚀 ~ file: index.tsx:106 ~ Board ~ taskTypeOptions:", taskTypeOptions)
 
   //MODAL ADD MEMBERS
   const showModal = () => {
@@ -300,17 +295,6 @@ export default function Board() {
   const handleEditorChange = (content: any, editor: any) => {
     // setDesciption(content);
   }
-
-  // const items: MenuProps['items'] = [
-  //   {
-  //     label: <a href="#" style={{ textDecoration: 'none' }}><BugOutlined className='text-red-600' /> bug</a>,
-  //     key: '0',
-  //   },
-  //   {
-  //     label: <a href="#" style={{ textDecoration: 'none' }}><AccountBookOutlined className='text-blue-600' /> new task</a>,
-  //     key: '1',
-  //   },
-  // ];
 
   const initialValues = {
     priorityTask: {
