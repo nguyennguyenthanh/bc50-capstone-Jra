@@ -22,7 +22,13 @@ export const actCreateProject = (project: any, navigate: any) => {
       .then((result: Result<CreateProject>) => {
         if (result.data.statusCode === 200) {
           dispatch(actCreateProjectSuccess(result.data.content));
-          alert(result.data.message);
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Create Project Successfully',
+            showConfirmButton: false,
+            timer: 1500
+          })
           navigate('/', { replace: true });
         }
       })
