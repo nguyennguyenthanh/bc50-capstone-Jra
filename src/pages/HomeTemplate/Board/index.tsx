@@ -94,9 +94,7 @@ export default function Board() {
   const userOptions = dataBoard?.members.map((item: any, index: any) => {
     return { value: item.userId, label: item.name }
   })
-  const taskTypeOptions = dataTaskType?.map((item: any) => {
-    return { value: item.id, label: item.taskType }
-  })
+  
 
   //MODAL ADD MEMBERS
   const showModal = () => {
